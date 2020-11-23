@@ -3,7 +3,7 @@ use Mix.Config
 # Configure your database
 config :agileparking, Agileparking.Repo,
   username: "postgres",
-  password: "123456789",
+  password: "orkhan97",
   database: "agileparking_dev",
   hostname: "localhost",
   show_sensitive_data_on_connection_error: true,
