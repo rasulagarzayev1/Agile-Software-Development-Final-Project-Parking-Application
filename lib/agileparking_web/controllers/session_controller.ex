@@ -7,13 +7,13 @@ defmodule AgileparkingWeb.SessionController do
     render conn, "new.html"
   end
 
-  def create(conn, %{"session" => %{"username" => username, "password" => password}}) do
-    user = Repo.get_by(User, username: username)
+  def create(conn, %{"session" => %{"email" => email, "password" => password}}) do
+    user = Repo.get_by(User, email: email)
     case Authentication.check_credentials(user, password) do
       {:ok, _} ->
         conn
         |> Authentication.login(user)
-        |> put_flash(:info, "Welcome #{username}")
+        |> put_flash(:info, "Welcome #{email}")
         |> redirect(to: Routes.page_path(conn, :index))
       {:error, _reason} ->
         conn
