@@ -7,19 +7,35 @@ defmodule AgileparkingWeb.Router do
     plug :fetch_flash
     plug :protect_from_forgery
     plug :put_secure_browser_headers
-    plug Agileparking.Authentication, repo: Agileparking.Repo
+    # plug Agileparking.Authentication, repo: Agileparking.Repo
+  end
+
+  pipeline :browser_auth do
+    plug Agileparking.AuthPipeline
+  end
+
+  pipeline :ensure_auth do
+    plug Guardian.Plug.EnsureAuthenticated
   end
 
   pipeline :api do
     plug :accepts, ["json"]
   end
 
-  scope "/", AgileparkingWeb do
-    pipe_through :browser
 
-    get "/", PageController, :index
-    resources "/users", UserController
+  scope "/", AgileparkingWeb do
+    pipe_through [:browser]
     resources "/sessions", SessionController, only: [:new, :create, :delete]
+  end
+
+  scope "/", AgileparkingWeb do
+    pipe_through [:browser, :browser_auth]
+    get "/", PageController, :index
+  end
+
+  scope "/", AgileparkingWeb do
+    pipe_through [:browser, :browser_auth, :ensure_auth]
+    resources "/users", UserController
   end
 
   # Other scopes may use custom stacks.
