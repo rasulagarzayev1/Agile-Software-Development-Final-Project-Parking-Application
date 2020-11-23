@@ -20,6 +20,11 @@
               <li><%= link "Log in", to: Routes.session_path(@conn, :new) %></li>
             <% end %>
           </ol>
+          <ol class="breadcrumb pull-right">
+            <%= if ! Agileparking.Authentication.load_current_user(@conn) do %>
+              <li><%= link "Registration", to: Routes.user_path(@conn, :new) %></li>
+            <% end %>
+          </ol>
           <span class="logo"></span>
           </nav>
           <a href="https://phoenixframework.org/" class="phx-logo">
