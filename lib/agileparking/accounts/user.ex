@@ -4,7 +4,8 @@ defmodule Agileparking.Accounts.User do
 
   schema "users" do
     field :name, :string
-    field :username, :string
+    field :email, :string
+    field :license_number, :string
     field :password, :string, virtual: true
     field :hashed_password, :string
     timestamps()
@@ -12,10 +13,12 @@ defmodule Agileparking.Accounts.User do
 
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:name, :username, :password])
-    |> validate_required([:name, :username])
-    |> unique_constraint(:username)
+    |> cast(params, [:name, :email, :password, :license_number])
+    |> validate_required([:name, :email])
+    |> unique_constraint(:email)
+    |> validate_format(:email, ~r/@/)
     |> validate_length(:password, min: 6)
+    |> validate_length(:license_number, min: 9)
     |> hash_password
   end
 
