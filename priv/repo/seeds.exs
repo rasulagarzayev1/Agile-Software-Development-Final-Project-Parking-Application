@@ -13,7 +13,7 @@
 
 alias Agileparking.{Repo, Accounts.User}
 
-[%{name: "Fred Flintstone", username: "fred", password: "parool"},
- %{name: "Barney Rubble", username: "barney", password: "parool"}]
+[%{name: "Fred Flintstone", email: "fred@gmail.com", password: "parool", license_number: "123456789"},
+ %{name: "Barney Rubble", email: "barney@gmail.com", password: "parool", license_number: "12345678a"}]
 |> Enum.map(fn user_data -> User.changeset(%User{}, user_data) end)
 |> Enum.each(fn changeset -> Repo.insert!(changeset) end)
