@@ -17,3 +17,4 @@ alias Agileparking.{Repo, Accounts.User}
  %{name: "Barney Rubble", email: "barney@gmail.com", password: "parool", license_number: "12345678a"}]
 |> Enum.map(fn user_data -> User.changeset(%User{}, user_data) end)
 |> Enum.each(fn changeset -> Repo.insert!(changeset) end)
+
