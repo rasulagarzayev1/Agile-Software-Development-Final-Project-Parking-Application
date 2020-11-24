@@ -21,36 +21,19 @@ defmodule AgileparkingWeb.UsersControllerTest do
     {:ok, conn: conn}
   end
 
-
-  def fixture(:user) do
-    {:ok, user} = Accounts.create_user(@create_attrs)
-    user
-  end
-
   test "lists all users", %{conn: conn} do
     conn = get(conn, Routes.user_path(conn, :index))
     assert html_response(conn, 200) =~ "Listing users"
   end
 
-  test "Test registration", %{conn: conn} do
+  test "User registers correctly", %{conn: conn} do
     conn = post conn, "/users", %{user: [name: "fred1", email: "farid@gmail.com", license_number: "1234567676", password: "parool" ]}
     conn = get conn, redirected_to(conn)
     assert html_response(conn, 200) =~ ~r/User created successfully./
   end
 
-  test "renders form", %{conn: conn} do
+  test "New user shows correctly", %{conn: conn} do
     conn = get(conn, Routes.user_path(conn, :new))
     assert html_response(conn, 200) =~ "New User"
   end
-
-  test "redirects to show when data is valid", %{conn: conn} do
-    conn = post(conn, Routes.user_path(conn, :create), user: @create_attrs)
-
-    assert %{id: id} = redirected_params(conn)
-    assert redirected_to(conn) == Routes.user_path(conn, :new, id)
-
-    conn = get(conn, Routes.user_path(conn, :show, id))
-    assert html_response(conn, 200) =~ "Show User"
-  end
-  
 end

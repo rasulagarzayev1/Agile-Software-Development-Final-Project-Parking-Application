@@ -12,5 +12,4 @@ defmodule AgileparkingWeb.SessionsControllerTest do
 
     assert conn.resp_body =~ ~r/Welcome/
   end
-
 end
