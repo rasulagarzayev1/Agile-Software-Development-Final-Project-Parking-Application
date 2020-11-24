@@ -22,7 +22,7 @@ defmodule AgileparkingWeb.UserController do
           {:ok, _user} ->
             conn
             |> put_flash(:info, "User created successfully.")
-            |> redirect(to: Routes.user_path(conn, :new))
+            |> redirect(to: Routes.page_path(conn, :index))
           {:error, changeset} ->
             render(conn, "new.html", changeset: changeset)
         end

@@ -14,12 +14,12 @@ defmodule Agileparking.Accounts.User do
   def changeset(struct, params \\ %{}) do
     struct
     |> cast(params, [:name, :email, :password, :license_number])
-    |> validate_required([:name, :email])
-    |> unique_constraint(:email)
-    |> validate_format(:email, ~r/@/)
+    |> validate_required([:name, :email, :license_number, :password])
     |> validate_length(:password, min: 6)
     |> validate_length(:license_number, min: 9)
     |> hash_password
+    |> unique_constraint(:email)
+    |> unique_constraint(:license_number)
   end
 
   defp hash_password(%Ecto.Changeset{valid?: true, changes: %{password: password}} = changeset) do
