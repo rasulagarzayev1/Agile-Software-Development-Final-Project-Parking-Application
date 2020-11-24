@@ -16,6 +16,7 @@ defmodule Agileparking.Accounts.User do
     |> cast(params, [:name, :email, :password, :license_number])
     |> validate_required([:name, :email])
     |> unique_constraint(:email)
+    |> unique_constraint(:license_number)
     |> validate_format(:email, ~r/@/)
     |> validate_length(:password, min: 6)
     |> validate_length(:license_number, min: 9)
