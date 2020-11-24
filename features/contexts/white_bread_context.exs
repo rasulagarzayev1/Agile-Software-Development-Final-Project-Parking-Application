@@ -1,17 +1,20 @@
 defmodule WhiteBreadContext do
   use WhiteBread.Context
   use Hound.Helpers
+
   feature_starting_state fn  ->
     Application.ensure_all_started(:hound)
     %{}
   end
   scenario_starting_state fn _state ->
     Hound.start_session
+    Ecto.Adapters.SQL.Sandbox.checkout(Agileparking.Repo)
+    Ecto.Adapters.SQL.Sandbox.mode(Agileparking.Repo, {:shared, self()})
     %{}
   end
-  scenario_finalize fn _status, _state -> 
-    #Hound.end_session
-    nil
+  scenario_finalize fn _status, _state ->
+    Ecto.Adapters.SQL.Sandbox.checkin(Agileparking.Repo)
+    Hound.end_session
   end
   
   given_ ~r/^I have the following email "(?<email>[^"]+)" and password "(?<password>[^"]+)"$/,
