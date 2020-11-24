@@ -39,7 +39,7 @@ defmodule WhiteBreadContext do
   end
 
   then_ ~r/^I should receive a confirmation message$/, fn state ->
-    assert visible_in_page? ~r/Hello fred@gmail.com/
+    assert visible_in_page? ~r/Welcome fred@gmail.com/
     {:ok, state}
   end
 
