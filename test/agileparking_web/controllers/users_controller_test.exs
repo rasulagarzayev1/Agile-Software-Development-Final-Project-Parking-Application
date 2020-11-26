@@ -1,6 +1,7 @@
 defmodule AgileparkingWeb.UsersControllerTest do
   use AgileparkingWeb.ConnCase
 
+<<<<<<< HEAD
   alias Agileparking.{Repo, Accounts.User}
   alias Agileparking.Guardian
   alias Agileparking.Accounts.User
@@ -36,4 +37,11 @@ defmodule AgileparkingWeb.UsersControllerTest do
     conn = get(conn, Routes.user_path(conn, :new))
     assert html_response(conn, 200) =~ "New User"
   end
+=======
+  test "POST /users", %{conn: conn} do
+    conn = post conn, "/users", %{user: [name: "Liivi 2", email: "muuseumi@gmail.com", license_number: "dfghjgkfldks", password: "1234567" ]}
+    conn = get conn, redirected_to(conn)
+    assert html_response(conn, 200) =~ ~r/User created successfully./
+  end
+>>>>>>> 1fb819a34ac28e61bf83eb9e9d53c6c3b0476e34
 end
