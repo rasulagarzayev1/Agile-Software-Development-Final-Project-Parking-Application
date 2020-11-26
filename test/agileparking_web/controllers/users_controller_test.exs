@@ -32,6 +32,12 @@ defmodule AgileparkingWeb.UsersControllerTest do
     assert html_response(conn, 200) =~ ~r/User created successfully./
   end
 
+  test "User registers failure", %{conn: conn} do
+    conn = post conn, "/users", %{user: [name: "fred1", email: "farid", license_number: "1234567676", password: "parool" ]}
+
+    assert conn.resp_body =~ ~r/Oops, something went wrong! Please check the errors below./
+  end
+
   test "New user shows correctly", %{conn: conn} do
     conn = get(conn, Routes.user_path(conn, :new))
     assert html_response(conn, 200) =~ "New User"
