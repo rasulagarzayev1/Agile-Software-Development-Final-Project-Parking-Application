@@ -1,0 +1,27 @@
+<h2>Listing parking loots</h2>
+
+<%= form_tag("/zones", method: :post) %>
+  <input name="name" type="text" id="name"/>
+  <button id="search">Search</button>
+</form>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>name</th>
+      <th>Hourly price</th>
+      <th>Real Time price</th>
+      <th>Distance</th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for zone <- @zones do %>
+    <tr>
+      <td><%= elem(zone,0).name %></td>
+      <td><%= elem(zone,0).hourlyPrice %></td>
+      <td><%= elem(zone,0).realTimePrice %></td>
+      <td><%= elem(zone,1) %></td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
