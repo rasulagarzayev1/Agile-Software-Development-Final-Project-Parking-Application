@@ -49,8 +49,9 @@ defmodule Agileparking.MixProject do
       {:guardian, "~> 1.2"},
       {:pbkdf2_elixir, "~> 1.0"},
       {:white_bread, "~> 4.5", only: [:test]},
-      {:hound, "~> 1.0"}
-
+      {:hound, "~> 1.0"},
+      {:httpoison, "~> 1.6"},
+      {:poison, "~> 3.1"}
     ]
   end
 
