@@ -1,7 +1,15 @@
 defmodule WhiteBreadConfig do
   use WhiteBread.SuiteConfiguration
 
-  suite name:          "All",
-        context:       WhiteBreadContext,
-        feature_paths: ["features/"]
+  suite name:          "Register",
+        context:       UserManagementContext,
+        feature_paths: ["features/user_registration.feature"]
+
+  suite name:          "Login",
+        context:       UserManagementContext,
+        feature_paths: ["features/user_login.feature"]
+
+  suite name:          "Search parking",
+        context:       SearchParkingContext,
+        feature_paths: ["features/zone_search_parking.feature"]      
 end

@@ -1,4 +1,4 @@
-defmodule WhiteBreadContext do
+defmodule UserManagementContext do
   use WhiteBread.Context
   use Hound.Helpers
 

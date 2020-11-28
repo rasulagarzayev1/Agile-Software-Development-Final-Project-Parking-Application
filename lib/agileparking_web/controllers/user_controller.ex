@@ -2,7 +2,7 @@ defmodule AgileparkingWeb.UserController do
     use AgileparkingWeb, :controller
     alias Agileparking.Repo
     alias Agileparking.Accounts.User
-
+    alias Agileparking.Repo
 
 
     def index(conn, _params) do
