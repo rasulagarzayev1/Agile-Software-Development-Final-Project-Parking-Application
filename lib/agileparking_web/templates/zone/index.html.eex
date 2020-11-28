@@ -1,17 +1,24 @@
 <h2>Listing parking loots</h2>
 
 <%= form_tag("/zones", method: :post) %>
+  Address
   <input name="name" type="text" id="name"/>
-  <button id="search">Search</button>
+  Hour
+  <input name="hour" type="text" id="hour"/>
+  Minutes
+  <input name="minutes" type="text" id="minutes"/>
+  <button id="search">Search</button> 
 </form>
 
 <table class="table">
   <thead>
     <tr>
       <th>name</th>
-      <th>Hourly price</th>
-      <th>Real Time price</th>
+      <th>Hourly rate</th>
+      <th>Real Time rate</th>
       <th>Distance</th>
+      <th>Hourly price</th>
+      <th>real time price</th>
     </tr>
   </thead>
   <tbody id="zones-table">
@@ -21,6 +28,14 @@
       <td><%= elem(zone,0).hourlyPrice %></td>
       <td><%= elem(zone,0).realTimePrice %></td>
       <td><%= elem(zone,1) %></td>
+      <%= if elem(zone,2) == true do %>
+      <td><%= elem(zone,3) %></td>
+      <td><%= elem(zone,4) %></td>
+      <% end %>
+      <%= if elem(zone,1) == false do %>
+      <td>-</td>
+      <td>-</td>
+      <% end %>
     </tr>
 <% end %>
   </tbody>
