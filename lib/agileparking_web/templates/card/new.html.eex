@@ -1,0 +1,41 @@
+<%= form_for @changeset, Routes.card_path(@conn, :create), fn card -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>Oops, something went wrong! Please check the errors below.</p>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= label card, :name, class: "control-label" %>
+    <%= text_input card, :name, class: "form-control" %>
+    <%= error_tag card, :name %>
+  </div>
+
+  <div class="form-group">
+    <%= label card, :number, class: "control-label" %>
+    <%= text_input card, :number, class: "form-control" %>
+    <%= error_tag card, :number %>
+  </div>
+
+  <div class="form-group">
+    <%= label card, :month, class: "control-label" %>
+    <%= text_input card, :month, class: "form-control" %>
+    <%= error_tag card, :month %>
+  </div>
+
+  <div class="form-group">
+    <%= label card, :year, class: "control-label" %>
+    <%= text_input card, :year, class: "form-control" %>
+    <%= error_tag card, :year %>
+  </div>
+
+  <div class="form-group">
+    <%= label card, :cvc, class: "control-label" %>
+    <%= text_input card, :cvc, class: "form-control" %>
+    <%= error_tag card, :cvc %>
+  </div>
+
+  <div class="form-group">
+    <%= submit "Submit", class: "btn btn-primary" %>
+  </div>
+<% end %>
