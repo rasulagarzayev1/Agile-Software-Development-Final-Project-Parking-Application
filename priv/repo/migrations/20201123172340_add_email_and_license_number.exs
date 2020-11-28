@@ -7,5 +7,7 @@ defmodule Agileparking.Repo.Migrations.AddEmailAndLicenseNumber do
       add :license_number, :string
       remove :username
     end
+
+    create unique_index(:users, [:email])
   end
 end
