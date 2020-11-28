@@ -1,0 +1,27 @@
+<h2>Show user</h2>
+
+<ul>
+  <li>
+    <strong>Name:</strong>
+    <%= @user.name %>
+  </li>
+
+  <li>
+    <strong>Username:</strong>
+    <%= @user.email %>
+  </li>
+
+  <li>
+    <strong>Balance:</strong>
+    <%= @user.balance %>
+  </li>
+
+  <li>
+    <strong>Password:</strong>
+    <%= @user.password %>
+  </li>
+
+</ul>
+
+<span><%= link "Add balance", to: Routes.user_path(@conn, :edit, @user) %></span>
+<span><%= link "Back", to: Routes.user_path(@conn, :index) %></span>

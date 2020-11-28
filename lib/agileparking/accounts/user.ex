@@ -8,12 +8,13 @@ defmodule Agileparking.Accounts.User do
     field :license_number, :string
     field :password, :string, virtual: true
     field :hashed_password, :string
+    field :balance, :string
     timestamps()
   end
 
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:name, :email, :password, :license_number])
+    |> cast(params, [:name, :email, :password, :license_number, :balance])
     |> validate_required([:name, :email, :license_number, :password])
     |> validate_format(:email, ~r/@/)
     |> validate_length(:password, min: 6)
