@@ -14,7 +14,7 @@
       <th>Distance</th>
     </tr>
   </thead>
-  <tbody>
+  <tbody id="zones-table">
 <%= for zone <- @zones do %>
     <tr>
       <td><%= elem(zone,0).name %></td>

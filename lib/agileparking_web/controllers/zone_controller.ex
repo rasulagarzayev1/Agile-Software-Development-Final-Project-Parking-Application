@@ -17,6 +17,7 @@ defmodule AgileparkingWeb.ZoneController do
     end
 
     def create(conn, params) do
+        IO.puts "ESTICA CREATE"
         zones = Repo.all(Zone)
         address = params["name"]
         pointA = Agileparking.Geolocation.find_location(params["name"])

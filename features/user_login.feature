@@ -11,7 +11,7 @@ Scenario: login with valid credentials
   Then I should receive a confirmation message
 
 Scenario: login with invalid credentials
-  Given I have the following email "fred@gmail.com" and password "paroole"
+  Given I have the following email "sergimartinez@gmail.cat" and password "123456"
   And I am on the login page
   And I fill in the account information
   When I press "Login"
