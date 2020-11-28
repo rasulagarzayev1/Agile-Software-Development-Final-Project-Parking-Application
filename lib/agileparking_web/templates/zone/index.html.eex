@@ -33,6 +33,7 @@
       <td><%= elem(zone,4) %></td>
       <% end %>
       <%= if elem(zone,1) == false do %>
+      
       <td>-</td>
       <td>-</td>
       <% end %>
