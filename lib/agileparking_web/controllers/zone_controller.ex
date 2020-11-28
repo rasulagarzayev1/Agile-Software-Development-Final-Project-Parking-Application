@@ -17,13 +17,24 @@ defmodule AgileparkingWeb.ZoneController do
     end
 
     def create(conn, params) do
-        IO.puts "ESTICA CREATE"
         zones = Repo.all(Zone)
         address = params["name"]
-        pointA = Agileparking.Geolocation.find_location(params["name"])
-        IO.inspect zones
-        zones = Enum.map(zones, fn zone  -> {zone, distance(params["name"], zone.name)} end)
-        IO.inspect zones
-        render(conn, "index.html", zones: zones)
+
+        if ((params["hour"] != "") && (params["minutes"] != "")) do
+            hour = String.to_integer(params["hour"])
+            minutes = String.to_integer(params["minutes"])
+            IO.puts "HA DETECTAT ALGO CREC"
+            totalMinutes = minutes + hour*60
+            now = Time.utc_now()
+            totalMinutesNow = now.minute + now.hour * 60
+            totalHours = hour - now.hour
+            diff = totalMinutes - totalMinutesNow
+            pointA = Agileparking.Geolocation.find_location(params["name"])
+            zones = Enum.map(zones, fn zone  -> {zone, distance(params["name"], zone.name),true, (zone.realTimePrice *diff)/100, zone.hourlyPrice*totalHours} end)
+            render(conn, "index.html", zones: zones)
+        else
+            zones = Enum.map(zones, fn zone  -> {zone, distance(params["name"], zone.name),false, 0, 0} end)
+            render(conn, "index.html", zones: zones)
+        end
       end
   end
