@@ -17,6 +17,9 @@
       <td><%= user.email %></td>
       <td><%= user.license_number %></td>
 
+      <td class="text-right">
+        <span><%= link "Show", to: Routes.user_path(@conn, :show, user), class: "btn btn-default btn-xs" %></span>
+      </td>
 
 
     </tr>

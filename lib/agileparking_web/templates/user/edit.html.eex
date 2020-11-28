@@ -1,0 +1,12 @@
+<%= form_for @changeset, Routes.user_path(@conn, :update, @user), fn user -> %>
+
+  <div class="form-group">
+    <%= label user, :balance, class: "control-label" %>
+    <%= number_input  user, :balance, class: "form-control", step: "0.01", min: 0 %>
+    <%= error_tag user, :balance %>
+  </div>
+
+  <div class="form-group">
+    <%= submit "Submit", class: "btn btn-primary" %>
+  </div>
+<% end %>

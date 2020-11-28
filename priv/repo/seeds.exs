@@ -11,14 +11,14 @@
 # and so on) as they will fail if something goes wrong.
 
 
-#alias Agileparking.{Repo, Accounts.User, Sales.Zone}
+alias Agileparking.{Repo, Accounts.User, Sales.Zone}
 
-#[%{name: "Fred Flintstone", email: "fred@gmail.com", password: "parool", license_number: "123456789"},
-# %{name: "Barney Rubble", email: "barney@gmail.com", password: "parool", license_number: "12345678a"}]
-#|> Enum.map(fn user_data -> User.changeset(%User{}, user_data) end)
-#|> Enum.each(fn changeset -> Repo.insert!(changeset) end)
+[%{name: "Fred Flintstone", email: "fred@gmail.com", password: "parool", license_number: "123456789", balance: "12.43"},
+ %{name: "Barney Rubble", email: "barney@gmail.com", password: "parool", license_number: "12345678a", balance: "0"}]
+|> Enum.map(fn user_data -> User.changeset(%User{}, user_data) end)
+|> Enum.each(fn changeset -> Repo.insert!(changeset) end)
 
 
-#[%{name: "Jakobi", hourlyPrice: 2, realTimePrice: 16}]
-#|> Enum.map(fn zone_data -> Zone.changeset(%Zone{}, zone_data) end)
-#|> Enum.each(fn changeset -> Repo.insert!(changeset) end)
+[%{name: "Jakobi", hourlyPrice: 2, realTimePrice: 16}]
+|> Enum.map(fn zone_data -> Zone.changeset(%Zone{}, zone_data) end)
+|> Enum.each(fn changeset -> Repo.insert!(changeset) end)
