@@ -39,6 +39,13 @@ defmodule AgileparkingWeb.Router do
     resources "/zones", ZoneController
     resources "/users", UserController
   end
+  scope "/", AgileparkingWeb do
+    pipe_through [:browser, :browser_auth, :ensure_auth]
+    resources "/bookings", BookingController
+    resources "/users", UserController
+  end
+
+
 
   # Other scopes may use custom stacks.
   # scope "/api", AgileparkingWeb do

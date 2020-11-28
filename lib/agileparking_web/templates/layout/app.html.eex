@@ -19,6 +19,9 @@
             <% else %>
               <li><%= link "Log in", to: Routes.session_path(@conn, :new) %></li>
             <% end %>
+            <li>
+               <%= link "Bookings", to: Routes.booking_path(@conn, :index) %>
+            </li>
           </ol>
           <ol class="breadcrumb pull-right">
             <%= if ! Agileparking.Authentication.load_current_user(@conn) do %>

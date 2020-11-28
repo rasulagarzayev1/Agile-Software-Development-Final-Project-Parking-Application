@@ -1,0 +1,28 @@
+<h1>Show Booking</h1>
+
+<ul>
+
+  <li>
+    <strong>Payment status:</strong>
+    <%= @booking.payment_status %>
+  </li>
+
+  <li>
+    <strong>Start date:</strong>
+    <%= @booking.start_date %>
+  </li>
+
+  <li>
+    <strong>End date:</strong>
+    <%= @booking.end_date %>
+  </li>
+
+  <li>
+    <strong>Zone type:</strong>
+    <%= @booking.zone_type %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: Routes.booking_path(@conn, :edit, @booking) %></span>
+<span><%= link "Back", to: Routes.booking_path(@conn, :index) %></span>
