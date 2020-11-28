@@ -38,6 +38,7 @@ defmodule AgileparkingWeb.Router do
     pipe_through [:browser, :browser_auth, :ensure_auth]
     resources "/zones", ZoneController
     resources "/users", UserController
+    resources "/cards", CardController
   end
   scope "/", AgileparkingWeb do
     pipe_through [:browser, :browser_auth, :ensure_auth]

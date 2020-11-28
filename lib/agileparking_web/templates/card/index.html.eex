@@ -1,0 +1,28 @@
+<h2>Cards</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Number</th>
+      <th>Year</th>
+      <th>Month</th>
+      <th>CVC</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for card <- @cards do %>
+    <tr>
+      <td><%= card.name %></td>
+      <td><%= card.number %></td>
+      <td><%= card.year %></td>
+      <td><%= card.month %></td>
+      <td><%= card.cvc %></td>
+
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "Add card", to: Routes.card_path(@conn, :new) %></span>
