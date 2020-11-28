@@ -1,7 +1,7 @@
 Feature: Get available zones
   As a registered user
   Such that Im logged in and I want to park into a zone
-  I want to see the available zones and their distance from my destination
+  I want to see the real time information about the avaibality of parking space
 
 Scenario: enter correct destination
     Given I am logged in into the system
