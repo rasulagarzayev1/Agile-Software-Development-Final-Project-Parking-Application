@@ -11,6 +11,11 @@ defmodule AgileparkingWeb.ZoneController do
         IO.inspect distance
         Enum.at(distance,0)
     end
+
+    def show(conn, %{"id" => id}) do
+        zone = Repo.get!(Zone, id)
+        render(conn, "show.html", zone: zone)
+    end
   
     def index(conn, _params) do
         render(conn, "index.html", zones: [])

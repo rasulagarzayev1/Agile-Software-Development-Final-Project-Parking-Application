@@ -55,10 +55,9 @@ defmodule SearchParkingContext do
 
     then_ ~r/^I should receive a table with all the available spaces and their respective distances$/, fn state ->
       assert visible_in_page? ~r/name/
-      assert visible_in_page? ~r/Hourly price/
-      assert visible_in_page? ~r/Real Time price/
+      assert visible_in_page? ~r/Hourly rate/
+      assert visible_in_page? ~r/Real Time rate/
       assert visible_in_page? ~r/Distance/
-      assert (find_all_elements(:id, "zones-table") |> Enum.count) > 0     
       {:ok, state}
     end
 
