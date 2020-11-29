@@ -7,7 +7,7 @@
 
   <div class="form-group">
     <%= label card, :name, class: "control-label" %>
-    <%= text_input card, :name, class: "form-control" %>
+    <%= text_input card, :name, class: "form-control"  %>
     <%= error_tag card, :name %>
   </div>
 
