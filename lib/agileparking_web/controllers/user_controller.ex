@@ -46,9 +46,6 @@ defmodule AgileparkingWeb.UserController do
         user = Agileparking.Authentication.load_current_user(conn)
         cards = Repo.all(from c in Card, where: c.user_id == ^user.id)
         num = length(cards)
-        IO.puts("Hello")
-        IO.puts(num)
-        IO.puts("bye")
         case num > 0 do
           true ->
             map = %{}
