@@ -23,4 +23,4 @@ config :logger, level: :warn
 
 
 config :hound, driver: "chrome_driver"
-config :takso, sql_sandbox: true
+config :agileparking, sql_sandbox: true
