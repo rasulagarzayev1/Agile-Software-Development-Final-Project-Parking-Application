@@ -1,7 +1,9 @@
 defmodule AgileparkingWeb.UserController do
     use AgileparkingWeb, :controller
+    import Ecto.Query
     alias Agileparking.Repo
     alias Agileparking.Accounts.User
+    alias Agileparking.Accounts.Card
     alias Agileparking.Repo
     alias Ecto.{Changeset, Multi}
 
@@ -41,17 +43,32 @@ defmodule AgileparkingWeb.UserController do
       end
 
       def update(conn, %{"id" => id, "user" => user_params}) do
-        map = %{}
-        map = Map.put(map, :password, Agileparking.Authentication.load_current_user(conn).hashed_password)
-        map = Map.put(map, :email, Agileparking.Authentication.load_current_user(conn).email)
-        user = Repo.get!(User, id)
-        {current_balance, _} = Float.parse(user.balance)
-        {added_balance, _} = Float.parse(user_params["balance"])
-        balance = sum(current_balance, added_balance)
-        map = Map.put(map, :balance, to_string(balance))
-        changeset = User.changeset(user, map)
-        Repo.update!(changeset)
-        redirect(conn, to: Routes.user_path(conn, :index))
+        user = Agileparking.Authentication.load_current_user(conn)
+        cards = Repo.all(from c in Card, where: c.user_id == ^user.id)
+        num = length(cards)
+        IO.puts("Hello")
+        IO.puts(num)
+        IO.puts("bye")
+        case num > 0 do
+          true ->
+            map = %{}
+            map = Map.put(map, :password, Agileparking.Authentication.load_current_user(conn).hashed_password)
+            map = Map.put(map, :email, Agileparking.Authentication.load_current_user(conn).email)
+            user = Repo.get!(User, id)
+            {current_balance, _} = Float.parse(user.balance)
+            {added_balance, _} = Float.parse(user_params["balance"])
+            balance = sum(current_balance, added_balance)
+            map = Map.put(map, :balance, to_string(balance))
+            changeset = User.changeset(user, map)
+            Repo.update!(changeset)
+            conn
+                |> put_flash(:info, "Balance is increased")
+                |> redirect(to: Routes.user_path(conn, :index))
+
+          _ -> conn
+            |> put_flash(:error, "Please, add card!")
+            |> redirect(to: Routes.user_path(conn, :index))
+        end
       end
 
       def sum(a, b), do: a + b
