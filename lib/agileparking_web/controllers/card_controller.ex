@@ -19,7 +19,7 @@ defmodule AgileparkingWeb.CardController do
     user = Agileparking.Authentication.load_current_user(conn)
 
     card_struct = Ecto.build_assoc(user, :cards, Enum.map(card_params, fn({key, value}) -> {String.to_atom(key), value} end))
-    changeset = Card.changeset(card_struct, %{})
+    changeset = Card.changeset(card_struct, card_params)
 
     case Repo.insert(changeset) do
       {:ok, _card} ->
