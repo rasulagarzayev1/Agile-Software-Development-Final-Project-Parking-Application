@@ -11,5 +11,9 @@ defmodule WhiteBreadConfig do
 
   suite name:          "Search parking",
         context:       SearchParkingContext,
-        feature_paths: ["features/zone_search_parking.feature"]      
+        feature_paths: ["features/zone_search_parking.feature"]
+
+  suite name:          "Add balance",
+        context:       AddBalanceContext,
+        feature_paths: ["features/user_adding_balance.feature"]
 end
