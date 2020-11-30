@@ -23,7 +23,7 @@ defmodule AgileparkingWeb.UsersControllerTest do
 
   test "lists all users", %{conn: conn} do
     conn = get(conn, Routes.user_path(conn, :index))
-    assert html_response(conn, 200) =~ "Listing users"
+    assert html_response(conn, 200) =~ "My profile"
   end
 
   test "User registers correctly", %{conn: conn} do
