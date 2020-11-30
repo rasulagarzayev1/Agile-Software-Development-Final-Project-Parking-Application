@@ -16,4 +16,8 @@ defmodule WhiteBreadConfig do
   suite name:          "Add balance",
         context:       AddBalanceContext,
         feature_paths: ["features/user_adding_balance.feature"]
+
+  suite name:          "Add card",
+        context:       AddCardContext,
+        feature_paths: ["features/user_adding_card.feature"]
 end
