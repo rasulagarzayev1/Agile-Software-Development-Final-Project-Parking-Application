@@ -49,9 +49,9 @@ defmodule AgileparkingWeb.UserController do
         case num > 0 do
           true ->
             map = %{}
-            map = Map.put(map, :password, Agileparking.Authentication.load_current_user(conn).hashed_password)
+            map = Map.put(map, :password, Agileparking.Authentication.load_current_user(conn).email)
             map = Map.put(map, :email, Agileparking.Authentication.load_current_user(conn).email)
-            user = Repo.get!(User, id)
+            user = Repo.get!(User, user.id)
             {current_balance, _} = Float.parse(user.balance)
             {added_balance, _} = Float.parse(user_params["balance"])
             balance = sum(current_balance, added_balance)
