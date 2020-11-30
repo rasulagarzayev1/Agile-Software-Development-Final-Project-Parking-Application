@@ -7,10 +7,10 @@ defmodule AgileparkingWeb.UsersControllerTest do
 
   import Ecto.Query, only: [from: 2]
 
-  @create_attrs %{name: "sergi", email: "sergi@gmail.com", license_number: "1234567889", password: "12345678"}
+  @create_attrs %{name: "sergi", email: "sergi@gmail.com", license_number: "1234567889", password: "12345678", balance: "3.45"}
 
   setup do
-    user = Repo.insert!(%User{name: "sergi", email: "sergi@gmail.com", license_number: "1234567889", password: "12345678"})
+    user = Repo.insert!(%User{name: "sergi", email: "sergi@gmail.com", license_number: "1234567889", password: "12345678", balance: "3.45"})
     conn = build_conn()
            |> bypass_through(Agileparking.Router, [:browser, :browser_auth, :ensure_auth])
            |> get("/")
@@ -41,6 +41,20 @@ defmodule AgileparkingWeb.UsersControllerTest do
   test "New user shows correctly", %{conn: conn} do
     conn = get(conn, Routes.user_path(conn, :new))
     assert html_response(conn, 200) =~ "New User"
+  end
+
+  test "Increase balance failure", %{conn: conn} do
+
+    conn = put conn, "/users/1", %{id: 1, user: [name: "sergi", email: "sergi@gmail.com", license_number: "1234567889", password: "12345678", balance: "3.45"]}
+    conn = get conn, redirected_to(conn)
+    assert html_response(conn, 200) =~ ~r/Please, add card!/
+  end
+
+  test "Increase balance success", %{conn: conn} do
+    conn = post conn, "/cards", %{card: [name: "sergi", number: "1234567812345678", month: "12", year: "2020", cvc: "123" ]}
+    conn = put conn, "/users/1", %{id: 1, user: [name: "sergi", email: "sergi@gmail", license_number: "1234567889", password: "12345678", balance: "3.45"]}
+    conn = get conn, redirected_to(conn)
+    assert html_response(conn, 200) =~ ~r/Balance is increased/
   end
 
 end
