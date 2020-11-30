@@ -8,8 +8,9 @@ defmodule AgileparkingWeb.UserController do
     alias Ecto.{Changeset, Multi}
 
     def index(conn, _params) do
-        users = Repo.all(User)
-        render(conn, "index.html", users: users)
+        user = Agileparking.Authentication.load_current_user(conn)
+        users = Repo.all(from u in User, where: u.id == ^user.id)
+        render conn, "index.html", users: users
       end
 
       def new(conn, _params) do

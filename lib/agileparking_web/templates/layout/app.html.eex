@@ -16,6 +16,8 @@
             <%= if Agileparking.Authentication.load_current_user(@conn) do %>
               <li>Hello <%= Agileparking.Authentication.load_current_user(@conn).email %></li>
               <li><%= link "Log out", to: Routes.session_path(@conn, :delete, Agileparking.Authentication.load_current_user(@conn)), method: "delete" %></li>
+              <li><%= link "My profile", to: Routes.user_path(@conn, :index) %></li>
+              <li><%= link "My cards", to: Routes.card_path(@conn, :index) %></li>
             <% else %>
               <li><%= link "Log in", to: Routes.session_path(@conn, :new) %></li>
             <% end %>
