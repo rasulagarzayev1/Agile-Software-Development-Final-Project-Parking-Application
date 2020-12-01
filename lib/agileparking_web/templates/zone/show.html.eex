@@ -1,0 +1,8 @@
+<h2>Show zone</h2>
+
+<ul>
+  <li>
+    <strong>Name:</strong>
+    <%= @zone.name %>
+  </li>
+</ul>
