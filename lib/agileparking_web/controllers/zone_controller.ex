@@ -3,6 +3,11 @@ defmodule AgileparkingWeb.ZoneController do
     alias Agileparking.Repo
     alias Agileparking.Sales.Zone
 
+    def show(conn, %{"id" => id}) do
+        zone = Repo.get!(Zone, id)
+        render(conn, "show.html", zone: zone)
+      end
+
     def distance(placeA, placeB) do
         pointA = Agileparking.Geolocation.find_location(placeA)
         pointB = Agileparking.Geolocation.find_location(placeB)
