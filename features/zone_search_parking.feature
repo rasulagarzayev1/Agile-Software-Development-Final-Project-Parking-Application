@@ -9,3 +9,10 @@ Scenario: enter correct destination
     And I fill in the form with "barcelona"
     And I press submit
     Then I should receive a table with all the available spaces and their respective distances
+
+Scenario: enter incorrect destination
+    Given I am logged in into the system
+    And I am on the zones pages
+    And I fill in the form with "............."
+    And I press submit
+    Then I should receive a table with negative values

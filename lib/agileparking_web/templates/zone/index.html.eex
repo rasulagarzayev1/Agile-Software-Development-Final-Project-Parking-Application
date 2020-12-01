@@ -1,5 +1,6 @@
 <h2>Listing parking loots</h2>
 
+
 <%= form_tag("/zones", method: :post) %>
   Address
   <input name="name" type="text" id="name"/>
@@ -19,6 +20,7 @@
       <th>Distance</th>
       <th>Hourly price</th>
       <th>real time price</th>
+      <th>book</th>
     </tr>
   </thead>
   <tbody id="zones-table">
@@ -31,11 +33,16 @@
       <%= if elem(zone,2) == true do %>
       <td><%= elem(zone,3) %></td>
       <td><%= elem(zone,4) %></td>
+      <td>
+        <%= link "Book", to: Routes.zone_path(@conn, :show, elem(zone,0).id)%>
+      </td>
       <% end %>
-      <%= if elem(zone,1) == false do %>
-      
+      <%= if elem(zone,2) == false do %>
       <td>-</td>
       <td>-</td>
+      <td>
+        <%= link "Book", to: Routes.zone_path(@conn, :show, elem(zone,0).id)%>
+      </td>
       <% end %>
     </tr>
 <% end %>

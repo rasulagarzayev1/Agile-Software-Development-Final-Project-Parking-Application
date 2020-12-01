@@ -14,12 +14,7 @@ defmodule SearchParkingContext do
         Ecto.Adapters.SQL.Sandbox.checkout(Agileparking.Repo)
         Ecto.Adapters.SQL.Sandbox.mode(Agileparking.Repo, {:shared, self()})
 
-        # Register and login new user for BDD tests
-        [%{name: "sergi", email: "sergimartinez@gmail.cat", license_number: "123456789", password: "123456", balance: "12"}]
-        |> Enum.map(fn user_data -> User.changeset(%User{}, user_data) end)
-        |> Enum.each(fn changeset -> Repo.insert!(changeset) end)
-
-
+        
       # Create parking spots
       [%{name: "Jakobi", hourlyPrice: 2, realTimePrice: 16}]
       |> Enum.map(fn zone_data -> Zone.changeset(%Zone{}, zone_data) end)
@@ -28,8 +23,8 @@ defmodule SearchParkingContext do
 
     given_ ~r/^I am logged in into the system$/, fn state ->
         navigate_to "/sessions/new"
-        fill_field({:id, "session_email"}, "sergimartinez@gmail.cat")
-        fill_field({:id, "session_password"}, "123456")
+        fill_field({:id, "session_email"}, "fred@gmail.com")
+        fill_field({:id, "session_password"}, "parool")
         click({:id, "submit_button"})
         :timer.sleep(1000)
         {:ok, state}
@@ -48,7 +43,7 @@ defmodule SearchParkingContext do
 
     and_ ~r/^I press submit$/, fn state ->
       click({:id, "search"})
-      :timer.sleep(1000)
+      :timer.sleep(1500)
       {:ok, state}
     end
 

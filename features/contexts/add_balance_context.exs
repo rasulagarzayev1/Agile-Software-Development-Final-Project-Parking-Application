@@ -9,17 +9,6 @@ defmodule AddBalanceContext do
       end
 
 
-      scenario_starting_state fn _state ->
-        Hound.start_session
-        Ecto.Adapters.SQL.Sandbox.checkout(Agileparking.Repo)
-        Ecto.Adapters.SQL.Sandbox.mode(Agileparking.Repo, {:shared, self()})
-
-        # Register and login new user for BDD tests
-        [%{name: "orkhan", email: "orkhan97@gmail.cat", license_number: "123456789a", password: "123456", balance: "12"}]
-        |> Enum.map(fn user_data -> User.changeset(%User{}, user_data) end)
-        |> Enum.each(fn changeset -> Repo.insert!(changeset) end)
-
-      end
 
     given_ ~r/^I am logged in into the system$/, fn state ->
         navigate_to "/sessions/new"
