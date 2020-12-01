@@ -19,6 +19,8 @@
       <th>Distance</th>
       <th>Hourly price</th>
       <th>real time price</th>
+      <th>Book</th>
+
     </tr>
   </thead>
   <tbody id="zones-table">
@@ -32,10 +34,12 @@
       <td><%= elem(zone,3) %></td>
       <td><%= elem(zone,4) %></td>
       <% end %>
-      <%= if elem(zone,1) == false do %>
-      
+      <%= if elem(zone,2) == false do %>
       <td>-</td>
       <td>-</td>
+      <td>
+        <%= link "Book", to: Routes.zone_path(@conn, :show, elem(zone,0).id)%>
+      </td>
       <% end %>
     </tr>
 <% end %>
