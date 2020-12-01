@@ -7,35 +7,42 @@
 
   <div class="form-group">
     <%= label card, :name, class: "control-label" %>
-    <%= text_input card, :name, class: "form-control"  %>
-    <%= error_tag card, :name %>
+    <%= text_input card, :name, class: "form-control cardName"  %>
+    <span class="errorLabel errorForName"></span>
+    <%= error_tag card, :name  %>
   </div>
 
   <div class="form-group">
     <%= label card, :number, class: "control-label" %>
-    <%= text_input card, :number, class: "form-control" %>
+    <%= text_input card, :number, class: "form-control cardNumber" %>
+    <span class="errorLabel errorForNumber"></span>
     <%= error_tag card, :number %>
   </div>
 
   <div class="form-group">
-    <%= label card, :month, class: "control-label" %>
-    <%= text_input card, :month, class: "form-control" %>
-    <%= error_tag card, :month %>
-  </div>
-
-  <div class="form-group">
     <%= label card, :year, class: "control-label" %>
-    <%= text_input card, :year, class: "form-control" %>
+    <%= text_input card, :year, class: "form-control cardYear" %>
+    <span class="errorLabel errorForYear"></span>
     <%= error_tag card, :year %>
   </div>
 
   <div class="form-group">
+    <%= label card, :month, class: "control-label" %>
+    <%= text_input card, :month, class: "form-control cardMonth" %>
+    <span class="errorLabel errorForMonth"></span>
+    <%= error_tag card, :month %>
+  </div>
+
+
+
+  <div class="form-group">
     <%= label card, :cvc, class: "control-label" %>
-    <%= text_input card, :cvc, class: "form-control" %>
+    <%= text_input card, :cvc, class: "form-control cardCVC" %>
+    <span class="errorLabel errorForCVC"></span>
     <%= error_tag card, :cvc %>
   </div>
 
   <div class="form-group">
-    <%= submit "Submit", class: "btn btn-primary", id: "submit1" %>
+    <%= submit "Submit", class: "btn btn-primary submitCard", id: "submit1" %>
   </div>
 <% end %>
