@@ -8,7 +8,7 @@ defmodule Agileparking.Accounts.User do
     field :license_number, :string
     field :password, :string, virtual: true
     field :hashed_password, :string
-    field :balance, :string
+    field :balance, :string, default: "0.00"
     has_many :cards, Agileparking.Accounts.Card
     timestamps()
   end
