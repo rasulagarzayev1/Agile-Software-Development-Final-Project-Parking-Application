@@ -16,7 +16,7 @@ defmodule UserManagementContext do
     Ecto.Adapters.SQL.Sandbox.checkin(Agileparking.Repo)
     Hound.end_session
   end
-  
+
   given_ ~r/^I have the following email "(?<email>[^"]+)" and password "(?<password>[^"]+)"$/,
     fn state, %{email: email,password: password} ->
       {:ok, state |>Map.put(:email, email)
@@ -27,17 +27,19 @@ defmodule UserManagementContext do
   and_ ~r/^I am on the login page$/, fn state ->
     navigate_to "/sessions/new"
     {:ok, state}
-  end  
+  end
 
   and_ ~r/^I fill in the account information$/, fn state ->
     fill_field({:id, "session_email"}, state[:email])
     fill_field({:id, "session_password"}, state[:password])
+    :timer.sleep(1000)
     {:ok, state}
   end
-  
+
   and_ ~r/^I press "(?<submit>[^"]+)"$/,
   fn state, %{submit: submit} ->
     click({:id, "submit_button"})
+    :timer.sleep(1000)
     {:ok, state}
   end
 
@@ -57,7 +59,7 @@ defmodule UserManagementContext do
     |>Map.put(:email, argument_two)
     |>Map.put(:password, argument_three)
     |>Map.put(:license_number, argument_four)}
-  end  
+  end
 
 
   and_ ~r/^I am on the registration page$/, fn state ->
@@ -83,9 +85,9 @@ defmodule UserManagementContext do
       assert visible_in_page? ~r/User created successfully./
       {:ok, state}
     end
-    
+
     then_ ~r/^I should receive a register error message  $/, fn state ->
       assert visible_in_page? ~r/Oops, something went wrong! Please check the errors below./
       {:ok, state}
-    end 
+    end
 end
