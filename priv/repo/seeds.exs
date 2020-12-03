@@ -19,6 +19,6 @@ alias Agileparking.{Repo, Accounts.User, Sales.Zone}
 |> Enum.each(fn changeset -> Repo.insert!(changeset) end)
 
 
-[%{name: "Jakobi", hourlyPrice: 2, realTimePrice: 16,vacant: 0}]
+[%{name: "Jakobi", hourlyPrice: 2, realTimePrice: 16,vacant: 10}]
 |> Enum.map(fn zone_data -> Zone.changeset(%Zone{}, zone_data) end)
 |> Enum.each(fn changeset -> Repo.insert!(changeset) end)
