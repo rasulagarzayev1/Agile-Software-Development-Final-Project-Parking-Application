@@ -19,6 +19,7 @@
       <th>Distance</th>
       <th>Hourly price</th>
       <th>real time price</th>
+      <th>Avaible places</th>
       <th>Book</th>
 
     </tr>
@@ -37,8 +38,14 @@
       <%= if elem(zone,2) == false do %>
       <td>-</td>
       <td>-</td>
+      <td >
+        <%= elem(zone,0).vacant %>
+      </td>
       <td>
+        <%= if elem(zone,0).vacant>0 do%>
         <%= link "Book", to: Routes.zone_path(@conn, :show, elem(zone,0).id)%>
+        <% end%>
+        
       </td>
       <% end %>
     </tr>

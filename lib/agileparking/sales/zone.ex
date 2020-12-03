@@ -6,6 +6,7 @@ defmodule Agileparking.Sales.Zone do
     field :name, :string
     field :hourlyPrice, :integer
     field :realTimePrice, :integer
+    field :vacant, :integer
 
     timestamps()
   end
