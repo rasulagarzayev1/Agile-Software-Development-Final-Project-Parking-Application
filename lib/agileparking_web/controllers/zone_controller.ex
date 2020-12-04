@@ -52,24 +52,25 @@ defmodule AgileparkingWeb.ZoneController do
       end
 
       def update(conn, %{"id" => id, "zone" => zone_params}) do
-        zone = Repo.all(from z in Zone, where: z.id == ^id)
-        IO.puts("-------------------")
-        IO.inspect(zone)
-        IO.puts("-------------------")
+        zone = Repo.get!(Zone, id)
+        case zone.vacant > 0 do
+          true ->
+              map = %{}
+              map = Map.put(map, :vacant, sub(zone.vacant, 1))
+              changeset = Zone.changeset(zone, map)
+              Repo.update!(changeset)
+              zone = Repo.get!(Zone, id)
+              conn
+              |> put_flash(:info, "Booked successfully.")
+              |> redirect(to: Routes.page_path(conn, :index))
 
-        map = %{}
-        map = Map.put(map, :name, "123")
-        map = Map.put(map, :hourlyPrice, 1)
-        map = Map.put(map, :realTimePrice, 1)
-        map = Map.put(map, :vacant, 1)
-        IO.puts("-------------------")
-        IO.inspect(map)
-        IO.puts("-------------------")
-        changeset = Zone.changeset(zone, map)
-        Repo.update!(changeset)
-        conn
-            |> put_flash(:info, "Balance is increased")
-            |> redirect(to: Routes.user_path(conn, :index))
+
+            _ -> conn
+              |> put_flash(:error, "There is no an available slot. Please choose new parking area")
+              |> redirect(to: Routes.zone_path(conn, :index))
+
+        end
+
 
       end
 
