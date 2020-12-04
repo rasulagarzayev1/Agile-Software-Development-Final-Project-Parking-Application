@@ -3,6 +3,7 @@ defmodule AgileparkingWeb.ZoneController do
     import Ecto.Query
     alias Agileparking.Repo
     alias Agileparking.Sales.Zone
+    alias Agileparking.Bookings.Booking
 
     def show(conn, %{"id" => id}) do
         zone = Repo.get!(Zone, id)
@@ -52,6 +53,19 @@ defmodule AgileparkingWeb.ZoneController do
       end
 
       def update(conn, %{"id" => id, "zone" => zone_params}) do
+        user = Agileparking.Authentication.load_current_user(conn)
+        # map1 = %{}
+        # map1 = Map.put(map1, :payment_status, zone_params["payment_status"])
+        # map1 = Map.put(map1, :start_date, "1234a")
+        # map1 = Map.put(map1, :end_date, "1234a")
+        # map1 = Map.put(map1, :zone_type, "1")
+        card_struct = Ecto.build_assoc(user, :bookings, Enum.map(zone_params, fn({key, value}) -> {String.to_atom(key), value} end))
+        changeset = Booking.changeset(card_struct, zone_params)
+        #changeset = Booking.changeset(%Booking{}, map1)
+        IO.puts("------")
+        IO.inspect(changeset)
+        IO.puts("------")
+        Repo.insert(changeset)
         zone = Repo.get!(Zone, id)
         case zone.vacant > 0 do
           true ->
@@ -59,7 +73,6 @@ defmodule AgileparkingWeb.ZoneController do
               map = Map.put(map, :vacant, sub(zone.vacant, 1))
               changeset = Zone.changeset(zone, map)
               Repo.update!(changeset)
-              zone = Repo.get!(Zone, id)
               conn
               |> put_flash(:info, "Booked successfully.")
               |> redirect(to: Routes.page_path(conn, :index))
