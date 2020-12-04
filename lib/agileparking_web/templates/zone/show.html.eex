@@ -5,6 +5,18 @@
     <strong>Name:</strong>
     <%= @zone.name %>
   </li>
+  <li>
+    <strong>hourlyPrice:</strong>
+    <%= @zone.hourlyPrice %>
+  </li>
+  <li>
+    <strong>realTimePrice:</strong>
+    <%= @zone.realTimePrice %>
+  </li>
+  <li>
+    <strong>Vacant:</strong>
+    <%= @zone.vacant %>
+  </li>
 </ul>
 
 <span id="add"><%= link "Book", to: Routes.zone_path(@conn, :edit, @zone) %></span>

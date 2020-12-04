@@ -11,10 +11,9 @@ defmodule Agileparking.Sales.Zone do
     timestamps()
   end
 
-  @doc false
-  def changeset(struct, attrs \\ %{}) do
+  def changeset(struct, params \\ %{}) do
     struct
-    |> cast(attrs, [:name, :hourlyPrice, :realTimePrice, :vacant])
+    |> cast(params, [:name, :hourlyPrice, :realTimePrice, :vacant])
     |> validate_required([:name, :hourlyPrice, :realTimePrice])
   end
 end
