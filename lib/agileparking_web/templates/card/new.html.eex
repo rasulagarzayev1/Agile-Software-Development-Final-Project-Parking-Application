@@ -34,7 +34,6 @@
   </div>
 
 
-
   <div class="form-group">
     <%= label card, :cvc, class: "control-label" %>
     <%= text_input card, :cvc, class: "form-control cardCVC" %>

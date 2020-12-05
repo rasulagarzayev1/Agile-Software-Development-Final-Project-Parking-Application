@@ -36,7 +36,7 @@ defmodule AgileparkingWeb.ZoneController do
   
     def index(conn, _params) do
         changeset = Zoneform.changeset(%Zoneform{}, %{})
-        render(conn, "index.html", zoneform: changeset, zones: [])
+        render(conn, "index.html", type: 3)
     end
 
     def create(conn, params) do
@@ -50,13 +50,13 @@ defmodule AgileparkingWeb.ZoneController do
         now = Time.add(now, 7200, :second)
         IO.puts "PARAMS"
         p =  Agileparking.Geolocation.find_location(address)
+        IO.puts "HE PASAAAAAAAAAAAAAAT"
+        IO.inspect p
         if Enum.at(p,0) == -1 do
             IO.puts "BROSSA"
             zones = Enum.map(zones, fn zone  -> {zone, -1,2, 0, 0} end)
             render(conn, "index.html", zones: zones,type: 0)
         end
-
-
 
         if is_time(time) do
             tt = get_time(time)
@@ -64,12 +64,15 @@ defmodule AgileparkingWeb.ZoneController do
                 zones = Enum.map(zones, fn zone  -> {zone, distance(params["name"], zone.name),0,0, 0} end)
                 render(conn, "index.html", zones: zones, type: 1)
             else
-                zones = Enum.map(zones, fn zone  -> {zone, distance(params["name"], zone.name),0,(zone.realTimePrice*((tt.minute + tt.hour*60) - (now.minute + now.hour*60))/100), zone.hourlyPrice*tt.hour - now.hour} end)
+                zones = Enum.map(zones, fn zone  -> {zone, distance(params["name"], zone.name),0,((zone.realTimePrice*((tt.minute + tt.hour*60) - (now.minute + now.hour*60)))/100), zone.hourlyPrice*tt.hour - now.hour} end)
                 render(conn, "index.html", zones: zones, type: 2)
             end
         else
-            zones = Enum.map(zones, fn zone  -> {zone, distance(params["name"], zone.name),0, 0, 0} end)
-            render(conn, "index.html", zones: zones,type: 1)    
+            IO.puts "ESTIC AL FREGAOOOOOOOOOOOOO"
+            p =  Agileparking.Geolocation.find_location(address)
+            IO.inspect p
+            zones = Enum.map(zones, fn zone  -> {zone, 0,0, 0, 0} end)
+            render(conn, "index.html", zones: zones,type: 0)    
         end
     end           
 end
