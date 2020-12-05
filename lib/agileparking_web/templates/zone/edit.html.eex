@@ -21,22 +21,7 @@
     <%= error_tag zone, :end_date %>
   </div>
 
-  <div class="form-group">
-      <label>Pay now</label>
-      <input type="checkbox" id="pay" name="pay" value="paay">
-  </div>
-
-  <div class="form-group">
-    <%= label zone, :hourlyPrice, class: "control-label" %>
-    <%= text_input  zone, :hourlyPrice, class: "form-control hourlyPrice" %>
-    <%= error_tag zone, :hourlyPrice %>
-  </div>
-
-  <div class="form-group">
-    <%= label zone, :realTimePrice, class: "control-label" %>
-    <%= text_input  zone, :realTimePrice, class: "form-control" %>
-    <%= error_tag zone, :realTimePrice %>
-  </div>
+  
 
   <div class="form-group">
     <%= submit "Submit", class: "btn btn-primary", id: "submit"%>
