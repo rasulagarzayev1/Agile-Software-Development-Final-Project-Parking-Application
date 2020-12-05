@@ -6,6 +6,8 @@ defmodule Agileparking.Sales.Zone do
     field :name, :string
     field :hourlyPrice, :integer
     field :realTimePrice, :integer
+    field :available, :boolean
+
 
     timestamps()
   end
@@ -13,7 +15,7 @@ defmodule Agileparking.Sales.Zone do
   @doc false
   def changeset(zone, attrs) do
     zone
-    |> cast(attrs, [:name, :hourlyPrice, :realTimePrice])
-    |> validate_required([:name, :hourlyPrice, :realTimePrice])
+    |> cast(attrs, [:name, :hourlyPrice, :realTimePrice, :available])
+    |> validate_required([:name, :hourlyPrice, :realTimePrice, :available])
   end
 end
