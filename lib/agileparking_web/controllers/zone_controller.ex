@@ -65,8 +65,9 @@ defmodule AgileparkingWeb.ZoneController do
             end
         else
             p =  Agileparking.Geolocation.find_location(address)
-            zones = Enum.map(zones, fn zone  -> {zone, 0,0, 0, 0} end)
-            render(conn, "index.html", zones: zones,type: 0)    
+            IO.puts "CAIC AQUI FIJO JODER"
+            zones = Enum.map(zones, fn zone  -> {zone, distance(params["name"], zone.name),0,0, 0} end)
+            render(conn, "index.html", zones: zones, type: 1)
         end
     end           
 
