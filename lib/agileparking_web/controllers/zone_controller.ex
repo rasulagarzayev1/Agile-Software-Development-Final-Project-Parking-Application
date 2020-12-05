@@ -4,11 +4,11 @@ defmodule AgileparkingWeb.ZoneController do
     alias Agileparking.Repo
     alias Agileparking.Sales.Zone
     alias Agileparking.Bookings.Booking
-
+    alias Ecto.{Changeset, Multi}
     def show(conn, %{"id" => id}) do
         zone = Repo.get!(Zone, id)
         render(conn, "show.html", zone: zone)
-      end
+    end
 
     def distance(placeA, placeB) do
         pointA = Agileparking.Geolocation.find_location(placeA)
@@ -59,20 +59,21 @@ defmodule AgileparkingWeb.ZoneController do
         # map1 = Map.put(map1, :start_date, "1234a")
         # map1 = Map.put(map1, :end_date, "1234a")
         # map1 = Map.put(map1, :zone_type, "1")
-        card_struct = Ecto.build_assoc(user, :bookings, Enum.map(zone_params, fn({key, value}) -> {String.to_atom(key), value} end))
-        changeset = Booking.changeset(card_struct, zone_params)
+
         #changeset = Booking.changeset(%Booking{}, map1)
-        IO.puts("------")
-        IO.inspect(changeset)
-        IO.puts("------")
-        Repo.insert(changeset)
         zone = Repo.get!(Zone, id)
         case zone.vacant > 0 do
           true ->
+              booking_struct = Ecto.build_assoc(user, :bookings, Enum.map(zone_params, fn({key, value}) -> {String.to_atom(key), value} end))
+              changeset1 = Booking.changeset(booking_struct, zone_params)
               map = %{}
               map = Map.put(map, :vacant, sub(zone.vacant, 1))
-              changeset = Zone.changeset(zone, map)
-              Repo.update!(changeset)
+              changeset2 = Zone.changeset(zone, map)
+              Multi.new
+                |> Multi.insert(:booking, Booking.changeset(changeset1))
+                |> Multi.update(:zone, Zone.changeset(changeset2))
+                |> Repo.transaction
+
               conn
               |> put_flash(:info, "Booked successfully.")
               |> redirect(to: Routes.page_path(conn, :index))
