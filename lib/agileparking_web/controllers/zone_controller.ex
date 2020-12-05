@@ -69,7 +69,7 @@ defmodule AgileparkingWeb.ZoneController do
             render(conn, "index.html", zones: zones,type: 0)    
         end
     end           
-end
+
             
     
 
