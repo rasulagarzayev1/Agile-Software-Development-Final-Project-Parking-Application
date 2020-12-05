@@ -1,12 +1,16 @@
-  <label for="PaymentType">Payment type:</label>
-  <select name="PaymentType" id="PaymentType">
-    <option value="0">Choose payment type</option>
-    <option value="Hourly">Hourly payment</option>
-    <option value="Real">Real time payment</option>
-  </select>
+ <label for="PaymentType">Payment type:</label>
+   <select name="PaymentType" id="PaymentType">
+     <option value="0">Choose payment type</option>
+     <option value="Hourly">Hourly payment</option>
+     <option value="Real">Real time payment</option>
+    </select>
+ <%= form_for @changeset, Routes.zone_path(@conn, :update, @zone), fn zone -> %>
 
 <%= form_for @changeset, Routes.zone_path(@conn, :update, @zone), fn zone -> %>
+
   <%= text_input  zone, :payment_type, class: "form-control hiddenPaymentType" %>
+  <%= text_input  zone, :pay_now, class: "form-control payNow" %>
+  <%= text_input  zone, :total_payment, class: "form-control totalPayment" %>
 
   <div class="form-group">
     <%= label zone, :start_date, class: "control-label" %>
@@ -27,6 +31,13 @@
       <input type="checkbox" id="pay" name="pay" value="">
   </div>
 
+
+  <div class="form-group">
+    <%= label zone, :zone_type, class: "control-label" %>
+    <%= text_input  zone, :zone_type, class: "form-control" %>
+    <%= error_tag zone, :zone_type %>
+  </div>
+
   <div class="form-group">
     <%= label zone, :hourlyPrice, class: "control-label" %>
     <%= text_input  zone, :hourlyPrice, class: "form-control hourlyPrice" %>
@@ -35,16 +46,20 @@
 
   <div class="form-group">
     <%= label zone, :realTimePrice, class: "control-label" %>
-    <%= text_input  zone, :realTimePrice, class: "form-control" %>
+    <%= text_input  zone, :realTimePrice, class: "form-control realTimePrice" %>
     <%= error_tag zone, :realTimePrice %>
   </div>
+
+
 
   <div class="form-group">
     <%= submit "Submit", class: "btn btn-primary", id: "submit"%>
   </div>
+
 <% end %>
 
 <script>
+
 
 let startTime = document.querySelector(".startTime");
 let endTime = document.querySelector(".endTime");
@@ -67,18 +82,28 @@ myForm.style.display = "none"
 let selectPayment = document.querySelector("#PaymentType");
 
 let hourlyPrice = document.querySelector(".hourlyPrice").value
+let realTimePrice = document.querySelector(".realTimePrice").value
 
-selectPayment.addEventListener('change',function(){
-  myForm.style.display = "block"
-  if(this.value == "Hourly"){
-    hiddenPaymentType.value = this.value
-    hiddenPaymentType.style.visibility = "hidden"
-  }else if(this.value == "Real"){
-    hiddenPaymentType.value = this.value
-  }else{
+let payNow = document.querySelector(".payNow");
+payNow.style.display = "none";
+let totalPayment = document.querySelector(".totalPayment");
+totalPayment.style.display = "none";
+
+selectPayment.addEventListener('change', function () {
+    myForm.style.display = "block"
+    if (this.value == "Hourly") {
+        hiddenPaymentType.value = this.value
+        hiddenPaymentType.style.visibility = "hidden"
+        startTime.value = ""
+        endTime.value = ""
+    } else if (this.value == "Real") {
+        hiddenPaymentType.value = this.value
+        startTime.value = ""
+        endTime.value = ""
+    } else {
         hiddenPaymentType.value = ""
-      myForm.style.display = "none"
-  }
+        myForm.style.display = "none"
+    }
 
 })
 
@@ -94,31 +119,58 @@ startTime.addEventListener('keyup', function (event) {
     if (!isValid) {
         errorForstartTime.innerText = "Must be correct form";
         this.style.marginBottom = "0";
-    }else if (endTime.value.length==5 && startTimeArr[0]>endTimeArr[0]){
+    } else if (endTime.value.length == 5 && startTimeArr[0] > endTimeArr[0]) {
         errorForendTime.innerText = "End time must be grater than start time";
         this.style.marginBottom = "0";
-    }else{
-          errorForstartTime.innerText = "";
-          this.style.marginBottom = "1em";
-          if(this.value.length == 5 && endTime.value.length == 5){
+    } else {
+        errorForstartTime.innerText = "";
+        this.style.marginBottom = "1em";
+        if (this.value.length == 5 && endTime.value.length == 5) {
             let startTimeArr = startTime.value.split(":");
             let endTimeArr = this.value.split(":");
             let TimeDurationHour = 0
             let TimeDurationMinute = 0
             let price = 0
-            if(endTimeArr[0]- startTimeArr[0] == 1 && endTimeArr[1]- startTimeArr[1] < 0){
-                TimeDurationHour = 0
-                TimeDurationMinute = 60 + (endTimeArr[1]-startTimeArr[1])
-                price = 1*hourlyPrice
-                alertParagraph.style.padding = "1%"
-                alertParagraph.innerText = "Your payment totally is" + " " + price + " " + "euros."
-            }else{
-              TimeDurationHour = endTimeArr[0]-startTimeArr[0]
-              TimeDurationMinute = endTimeArr[1]-startTimeArr[1]
-              price = (TimeDurationMinute != 0) ? TimeDurationHour*hourlyPrice + 1*hourlyPrice : TimeDurationHour*hourlyPrice
-              alertParagraph.style.padding = "1%"
-              alertParagraph.innerText = "Your payment totally is" + " " + price + " " + "euros."
+            if (PaymentType.value == "Hourly") {
+                if (endTimeArr[0] - startTimeArr[0] == 1 && endTimeArr[1] - startTimeArr[1] < 0) {
+                    TimeDurationHour = 0
+                    TimeDurationMinute = 60 + (endTimeArr[1] - startTimeArr[1])
+                    price = 1 * hourlyPrice
+                    alertParagraph.style.padding = "1%"
+                    alertParagraph.innerText = "Your payment totally is" + " " + price + " " + "euros."
+                    totalPayment.value = price
+                } else {
+                    TimeDurationHour = endTimeArr[0] - startTimeArr[0]
+                    TimeDurationMinute = endTimeArr[1] - startTimeArr[1]
+                    price = (TimeDurationMinute != 0) ? TimeDurationHour * hourlyPrice + 1 * hourlyPrice : TimeDurationHour * hourlyPrice
+                    alertParagraph.style.padding = "1%"
+                    alertParagraph.innerText = "Your payment totally is" + " " + price + " " + "euros."
+                    totalPayment.value = price
+                }
             }
+            else if (PaymentType.value == "Real") {
+                if (endTimeArr[0] - startTimeArr[0] == 1 && endTimeArr[1] - startTimeArr[1] < 0) {
+                    TimeDurationHour = 0
+                    TimeDurationMinute = 60 + (endTimeArr[1] - startTimeArr[1])
+                    price = TimeDurationMinute * realTimePrice
+                    alertParagraph.style.padding = "1%"
+                    alertParagraph.innerText = "Your payment totally is" + " " + price + " " + "euros."
+                    totalPayment.value = price
+                } else {
+                    TimeDurationHour = endTimeArr[0] - startTimeArr[0]
+                    TimeDurationMinute = endTimeArr[1] - startTimeArr[1]
+                    price = (TimeDurationMinute != 0) ? (TimeDurationHour * 60 + TimeDurationMinute) * realTimePrice : TimeDurationHour * 60 * realTimePrice
+                    alertParagraph.style.padding = "1%"
+                    alertParagraph.innerText = "Your payment totally is" + " " + price + " " + "euros."
+                    totalPayment.value = price
+                }
+
+            } else {
+                totalPayment.value = "";
+            }
+
+        } else {
+            totalPayment.value = ""
         }
     }
 })
@@ -133,42 +185,66 @@ endTime.addEventListener('keyup', function (event) {
     if (!isValid) {
         errorForendTime.innerText = "Must be correct form";
         this.style.marginBottom = "0";
-    }else if (startTime.value.length==5 && startTimeArr[0]>endTimeArr[0]){
+    } else if (startTime.value.length == 5 && startTimeArr[0] > endTimeArr[0]) {
         errorForendTime.innerText = "End time must be grater than start time";
         this.style.marginBottom = "0";
     }
-    else{
-          errorForendTime.innerText = "";
-          this.style.marginBottom = "1em";
-          if(this.value.length == 5 && startTime.value.length == 5){
+    else {
+        errorForendTime.innerText = "";
+        this.style.marginBottom = "1em";
+        if (this.value.length == 5 && startTime.value.length == 5) {
             let TimeDurationHour = 0
             let TimeDurationMinute = 0
             let price = 0
-            if(endTimeArr[0]- startTimeArr[0] == 1 && endTimeArr[1]- startTimeArr[1] < 0){
-                TimeDurationHour = 0
-                TimeDurationMinute = 60 + (endTimeArr[1]-startTimeArr[1])
-                price = 1*hourlyPrice
-                alertParagraph.style.padding = "1%"
-                alertParagraph.innerText = "Your payment totally is" + " " + price + " " + "euros."
-            }else{
-              TimeDurationHour = endTimeArr[0]-startTimeArr[0]
-              TimeDurationMinute = endTimeArr[1]-startTimeArr[1]
-              price = (TimeDurationMinute != 0) ? TimeDurationHour*hourlyPrice + 1*hourlyPrice : TimeDurationHour*hourlyPrice
-              alertParagraph.style.padding = "1%"
-              alertParagraph.innerText = "Your payment totally is" + " " + price + " " + "euros."
+             if (PaymentType.value == "Hourly") {
+                if (endTimeArr[0] - startTimeArr[0] == 1 && endTimeArr[1] - startTimeArr[1] < 0) {
+                    TimeDurationHour = 0
+                    TimeDurationMinute = 60 + (endTimeArr[1] - startTimeArr[1])
+                    price = 1 * hourlyPrice
+                    alertParagraph.style.padding = "1%"
+                    alertParagraph.innerText = "Your payment totally is" + " " + price + " " + "euros."
+                    totalPayment.value = price
+                } else {
+                    TimeDurationHour = endTimeArr[0] - startTimeArr[0]
+                    TimeDurationMinute = endTimeArr[1] - startTimeArr[1]
+                    price = (TimeDurationMinute != 0) ? TimeDurationHour * hourlyPrice + 1 * hourlyPrice : TimeDurationHour * hourlyPrice
+                    alertParagraph.style.padding = "1%"
+                    alertParagraph.innerText = "Your payment totally is" + " " + price + " " + "euros."
+                    totalPayment.value = price
+                }
             }
-          }
+            else if (PaymentType.value == "Real") {
+                if (endTimeArr[0] - startTimeArr[0] == 1 && endTimeArr[1] - startTimeArr[1] < 0) {
+                    TimeDurationHour = 0
+                    TimeDurationMinute = 60 + (endTimeArr[1] - startTimeArr[1])
+                    price = TimeDurationMinute * realTimePrice
+                    alertParagraph.style.padding = "1%"
+                    alertParagraph.innerText = "Your payment totally is" + " " + price + " " + "euros."
+                    totalPayment.value = price
+                } else {
+                    TimeDurationHour = endTimeArr[0] - startTimeArr[0]
+                    TimeDurationMinute = endTimeArr[1] - startTimeArr[1]
+                    price = (TimeDurationMinute != 0) ? (TimeDurationHour * 60 + TimeDurationMinute) * realTimePrice : TimeDurationHour * 60 * realTimePrice
+                    alertParagraph.style.padding = "1%"
+                    alertParagraph.innerText = "Your payment totally is" + " " + price + " " + "euros."
+                    totalPayment.value = price
+                }
+
+            } else {
+                totalPayment.value = "";
+            }
+        }else{
+          totalPayment.value = "";
+        }
     }
 })
 
-pay.addEventListener("click",function(){
-  if(pay.checked==true){
-    this.value = "true"
-    alert(this.value)
-  }else{
-    this.value = "false"
-    alert(this.value)
-  }
+pay.addEventListener("click", function () {
+    if (pay.checked == true) {
+        payNow.value = "true"
+    } else {
+        payNow.value = "false"
+    }
 })
 
 inputs.forEach(function (input) {
@@ -187,3 +263,5 @@ inputs.forEach(function (input) {
 });
 
 </script>
+
+<% end %>

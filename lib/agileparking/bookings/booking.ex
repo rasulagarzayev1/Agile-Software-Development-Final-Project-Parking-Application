@@ -4,7 +4,7 @@ defmodule Agileparking.Bookings.Booking do
 
   schema "bookings" do
     field :end_date, :string
-    field :payment_status, :string
+    field :payment_status, :string, default: "New"
     field :start_date, :string
     field :zone_type, :string
     belongs_to :user, Agileparking.Accounts.User
