@@ -50,30 +50,26 @@ defmodule AgileparkingWeb.ZoneController do
         now = Time.add(now, 7200, :second)
         p =  Agileparking.Geolocation.find_location(address)
         if Enum.at(p,0) == -1 do
-            zones = Enum.map(zones, fn zone  -> {zone, -1,2, 0, 0} end)
+            zones = Enum.map(zones, fn zone  -> {zone, -1,0, 0, 0} end)
             render(conn, "index.html", zones: zones,type: 0)
-        end
-
-        if is_time(time) do
-            tt = get_time(time)
-            if (tt.minute + tt.hour*60) <= (now.minute + now.hour*60) do
+        else
+            if is_time(time) do
+                tt = get_time(time)
+                if (tt.minute + tt.hour*60) <= (now.minute + now.hour*60) do
+                    zones = Enum.map(zones, fn zone  -> {zone, distance(params["name"], zone.name),0,0, 0} end)
+                    render(conn, "index.html", zones: zones, type: 1)
+                else
+                    zones = Enum.map(zones, fn zone  -> {zone, distance(params["name"], zone.name),0,((zone.realTimePrice*((tt.minute + tt.hour*60) - (now.minute + now.hour*60)))/100), zone.hourlyPrice*tt.hour - now.hour} end)
+                    render(conn, "index.html", zones: zones, type: 2)
+                end
+            else
+                p =  Agileparking.Geolocation.find_location(address)
                 zones = Enum.map(zones, fn zone  -> {zone, distance(params["name"], zone.name),0,0, 0} end)
                 render(conn, "index.html", zones: zones, type: 1)
-            else
-                zones = Enum.map(zones, fn zone  -> {zone, distance(params["name"], zone.name),0,((zone.realTimePrice*((tt.minute + tt.hour*60) - (now.minute + now.hour*60)))/100), zone.hourlyPrice*tt.hour - now.hour} end)
-                render(conn, "index.html", zones: zones, type: 2)
             end
-        else
-            p =  Agileparking.Geolocation.find_location(address)
-            IO.puts "CAIC AQUI FIJO JODER"
-            zones = Enum.map(zones, fn zone  -> {zone, distance(params["name"], zone.name),0,0, 0} end)
-            render(conn, "index.html", zones: zones, type: 1)
         end
-    end           
-
-            
+    end                   
     
-
       def edit(conn, %{"id" => id}) do
         zone = Repo.get!(Zone, id)
         changeset = Zone.changeset(zone, %{})

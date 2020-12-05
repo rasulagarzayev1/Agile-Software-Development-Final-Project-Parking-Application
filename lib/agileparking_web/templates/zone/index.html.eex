@@ -2,7 +2,7 @@
 
 <%= form_tag("/zones", method: :post) %>
   Address
-  <input name="name" type="text" id="name"/>
+  <input name="name" type="text" id="name" required/>
   Time (optional)
   <input name="time" type="text" id="time" placeholder="HH:MM"/>
   <p id="demo"></p>
@@ -18,7 +18,7 @@
 <table class="table">
   <thead>
     <tr>
-      <th>name</th>
+      <th>Name</th>
       <th>Hourly rate</th>
       <th>Real Time rate</th>
       <th>Distance</th>
@@ -46,7 +46,7 @@
 <table class="table">
   <thead>
     <tr>
-      <th>name</th>
+      <th>Name</th>
       <th>Hourly rate</th>
       <th>Real Time rate</th>
       <th>Distance</th>
