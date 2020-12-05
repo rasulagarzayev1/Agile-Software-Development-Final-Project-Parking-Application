@@ -9,6 +9,12 @@
   <button id="search" onclick="myFunction()">Search</button> 
 </form>
 
+
+<%= if @type == 0 do %>
+    <h1>Couldn't find any zone</h1>
+<% end %>
+
+<%= if @type == 1 do %>
 <table class="table">
   <thead>
     <tr>
@@ -16,49 +22,55 @@
       <th>Hourly rate</th>
       <th>Real Time rate</th>
       <th>Distance</th>
-      <th>Hourly price(EUR)</th>
-      <th>real time price(cents)</th>
       <th>Book</th>
-
     </tr>
   </thead>
   <tbody id="zones-table">
-<%= for zone <- @zones do %>
+    <%= for zone <- @zones do %>
     <tr>
       <td><%= elem(zone,0).name %></td>
       <td><%= elem(zone,0).hourlyPrice %></td>
       <td><%= elem(zone,0).realTimePrice %></td>
       <td><%= elem(zone,1) %></td>
-      <%= if elem(zone,2) == 1 do %>
-      <td><%= elem(zone,3) %></td>
-      <td><%= elem(zone,4) %></td>
-      <% end %>
-      <%= if elem(zone,2) == 0 do %>
-      <td>-</td>
-      <td>-</td>
       <td>
         <%= link "Book", to: Routes.zone_path(@conn, :show, elem(zone,0).id)%>
       </td>
-      <% end %>
     </tr>
-<% end %>
   </tbody>
+  <% end %>
 </table>
+<% end %>
 
 
-<script>
-function myFunction() {
-  var x, text;
+<%= if @type == 2 do %>
+<table class="table">
+  <thead>
+    <tr>
+      <th>name</th>
+      <th>Hourly rate</th>
+      <th>Real Time rate</th>
+      <th>Distance</th>
+      <th>Hourly price (EUR)</th>
+      <th>Real Time price (EUR)</th>
+      <th>Book</th>
+    </tr>
+  </thead>
+  <tbody id="zones-table">
+    <%= for zone <- @zones do %>
+    <tr>
+      <td><%= elem(zone,0).name %></td>
+      <td><%= elem(zone,0).hourlyPrice %></td>
+      <td><%= elem(zone,0).realTimePrice %></td>
+      <td><%= elem(zone,1) %></td>
+      <td><%= elem(zone,3) %></td>
+      <td><%= elem(zone,4) %></td>
+      <td>
+        <%= link "Book", to: Routes.zone_path(@conn, :show, elem(zone,0).id)%>
+      </td>
+    </tr>
+  </tbody>
+  <% end %>
+</table>
+<% end %>
 
-  // Get the value of the input field with id="numb"
-  x = document.getElementById("time").value;
 
-  // If x is Not a Number or less than one or greater than 10
-  if (isNaN(x) || x < 1 || x > 10) {
-    text = "Input not valid";
-  } else {
-    text = "Input OK";
-  }
-  document.getElementById("demo").innerHTML = text;
-}
-</script>

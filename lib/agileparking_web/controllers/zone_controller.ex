@@ -5,8 +5,6 @@ defmodule AgileparkingWeb.ZoneController do
     alias Agileparking.Forms.Zoneform
 
     def is_time(time) do
-        IO.puts "inspecction"
-        IO.inspect time
         case Time.from_iso8601(time) do
           {:ok, t} -> true
           _ -> false
@@ -15,8 +13,6 @@ defmodule AgileparkingWeb.ZoneController do
 
 
     def get_time(time) do
-        IO.puts "inspecction"
-        IO.inspect time
         case Time.from_iso8601(time) do
           {:ok, t} -> t
           _ -> false
@@ -35,8 +31,6 @@ defmodule AgileparkingWeb.ZoneController do
         pointA = Agileparking.Geolocation.find_location(placeA)
         pointB = Agileparking.Geolocation.find_location(placeB)
         distance = Agileparking.Geolocation.distance(placeA, placeB)
-        IO.puts "hola que tal"
-        IO.inspect distance
         Enum.at(distance,0)
     end
   
@@ -46,6 +40,7 @@ defmodule AgileparkingWeb.ZoneController do
     end
 
     def create(conn, params) do
+        type = 0
         zones = Repo.all(Zone)
         address = params["name"]
         time = params["time"]
@@ -53,21 +48,28 @@ defmodule AgileparkingWeb.ZoneController do
         time = "#{time}:#{milis}"
         now = Time.utc_now()
         now = Time.add(now, 7200, :second)
+        IO.puts "PARAMS"
+        p =  Agileparking.Geolocation.find_location(address)
+        if Enum.at(p,0) == -1 do
+            IO.puts "BROSSA"
+            zones = Enum.map(zones, fn zone  -> {zone, -1,2, 0, 0} end)
+            render(conn, "index.html", zones: zones,type: 0)
+        end
+
+
 
         if is_time(time) do
             tt = get_time(time)
             if (tt.minute + tt.hour*60) <= (now.minute + now.hour*60) do
-                IO.puts "back to the past"
-                zones = Enum.map(zones, fn zone  -> {zone, distance(params["name"], zone.name),false, 0, 0} end)
-                render(conn, "index.html", zones: zones)
+                zones = Enum.map(zones, fn zone  -> {zone, distance(params["name"], zone.name),0,0, 0} end)
+                render(conn, "index.html", zones: zones, type: 1)
             else
-                IO.puts "correct"
-                zones = Enum.map(zones, fn zone  -> {zone, distance(params["name"], zone.name),true, (zone.realTimePrice*((tt.minute + tt.hour*60) - (now.minute + now.hour*60))/100), zone.hourlyPrice*tt.hour - now.hour} end)
-                render(conn, "index.html", zones: zones)
+                zones = Enum.map(zones, fn zone  -> {zone, distance(params["name"], zone.name),0,(zone.realTimePrice*((tt.minute + tt.hour*60) - (now.minute + now.hour*60))/100), zone.hourlyPrice*tt.hour - now.hour} end)
+                render(conn, "index.html", zones: zones, type: 2)
             end
         else
-            zones = Enum.map(zones, fn zone  -> {zone, distance(params["name"], zone.name),false, 0, 0} end)
-            render(conn, "index.html", zones: zones)    
+            zones = Enum.map(zones, fn zone  -> {zone, distance(params["name"], zone.name),0, 0, 0} end)
+            render(conn, "index.html", zones: zones,type: 1)    
         end
     end           
 end
