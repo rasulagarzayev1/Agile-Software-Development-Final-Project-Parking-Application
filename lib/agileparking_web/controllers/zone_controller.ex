@@ -84,6 +84,11 @@ defmodule AgileparkingWeb.ZoneController do
 
       def update(conn, %{"id" => id, "zone" => zone_params}) do
         user = Agileparking.Authentication.load_current_user(conn)
+        IO.puts("-----------------")
+        IO.inspect(zone_params)
+
+        IO.puts("-----------------")
+
         # map1 = %{}
         # map1 = Map.put(map1, :payment_status, zone_params["payment_status"])
         # map1 = Map.put(map1, :start_date, "1234a")
