@@ -1,5 +1,6 @@
 defmodule AgileparkingWeb.ZoneController do
     use AgileparkingWeb, :controller
+    import Ecto.Query
     alias Agileparking.Repo
     alias Agileparking.Sales.Zone
     alias Agileparking.Forms.Zoneform
@@ -19,11 +20,10 @@ defmodule AgileparkingWeb.ZoneController do
         end
     end
 
-
     def show(conn, %{"id" => id}) do
         zone = Repo.get!(Zone, id)
         render(conn, "show.html", zone: zone)
-      end
+    end
 
       
 
@@ -33,7 +33,7 @@ defmodule AgileparkingWeb.ZoneController do
         distance = Agileparking.Geolocation.distance(placeA, placeB)
         Enum.at(distance,0)
     end
-  
+
     def index(conn, _params) do
         changeset = Zoneform.changeset(%Zoneform{}, %{})
         render(conn, "index.html", type: 3)
@@ -71,22 +71,50 @@ defmodule AgileparkingWeb.ZoneController do
     end           
 end
             
+    
 
-       # if ((params["hour"] != "") && (params["minutes"] != "")) do
-       #     hour = String.to_integer(params["hour"])
-       #     minutes = String.to_integer(params["minutes"])
-       #     IO.puts "HA DETECTAT ALGO CREC"
-       #     totalMinutes = minutes + hour*60
-       #     now = Time.utc_now()
-       #     totalMinutesNow = now.minute + now.hour * 60
-       ####     totalHours = hour - now.hour
-          #  diff = totalMinutes - totalMinutesNow
-          #  pointA = Agileparking.Geolocation.find_location(params["name"])
-        #    zones = Enum.map(zones, fn zone  -> {zone, distance(params["name"], zone.name),true, (zone.realTimePrice *diff)/100, zone.hourlyPrice*totalHours} end)
-        #    render(conn, "index.html", zones: [])
-       # else
-        #    zones = Enum.map(zones, fn zone  -> {zone, distance(params["name"], zone.name),false, 0, 0} end)
-         #   render(conn, "index.html", zones: zones)
-        #end
-      #end
-  #end
+      def edit(conn, %{"id" => id}) do
+        zone = Repo.get!(Zone, id)
+        changeset = Zone.changeset(zone, %{})
+
+        render(conn, "edit.html", zone: zone, changeset: changeset)
+      end
+
+      def update(conn, %{"id" => id, "zone" => zone_params}) do
+        user = Agileparking.Authentication.load_current_user(conn)
+        # map1 = %{}
+        # map1 = Map.put(map1, :payment_status, zone_params["payment_status"])
+        # map1 = Map.put(map1, :start_date, "1234a")
+        # map1 = Map.put(map1, :end_date, "1234a")
+        # map1 = Map.put(map1, :zone_type, "1")
+
+        #changeset = Booking.changeset(%Booking{}, map1)
+        zone = Repo.get!(Zone, id)
+        case zone.vacant > 0 do
+          true ->
+              booking_struct = Ecto.build_assoc(user, :bookings, Enum.map(zone_params, fn({key, value}) -> {String.to_atom(key), value} end))
+              changeset1 = Booking.changeset(booking_struct, zone_params)
+              map = %{}
+              map = Map.put(map, :vacant, sub(zone.vacant, 1))
+              changeset2 = Zone.changeset(zone, map)
+              Multi.new
+                |> Multi.insert(:booking, Booking.changeset(changeset1))
+                |> Multi.update(:zone, Zone.changeset(changeset2))
+                |> Repo.transaction
+
+              conn
+              |> put_flash(:info, "Booked successfully.")
+              |> redirect(to: Routes.page_path(conn, :index))
+
+
+            _ -> conn
+              |> put_flash(:error, "There is no an available slot. Please choose new parking area")
+              |> redirect(to: Routes.zone_path(conn, :index))
+
+        end
+
+
+      end
+
+      def sub(a, b), do: a - b
+  end

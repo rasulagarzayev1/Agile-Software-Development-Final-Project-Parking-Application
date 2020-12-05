@@ -69,7 +69,10 @@
       <td><%= elem(zone,3) %></td>
       <td><%= elem(zone,4) %></td>
       <td>
+        <%= if elem(zone,0).vacant>0 do%>
         <%= link "Book", to: Routes.zone_path(@conn, :show, elem(zone,0).id)%>
+        <% end%>
+        
       </td>
     </tr>
   </tbody>

@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Agileparking · Phoenix Framework</title>
     <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
-    <script defer type="text/javascript" src="<%= Routes.static_path(@conn, "/js/validation.js") %>"></script>
     <script defer type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
   </head>
   <body>
@@ -19,12 +18,11 @@
               <li><%= link "Log out", to: Routes.session_path(@conn, :delete, Agileparking.Authentication.load_current_user(@conn)), method: "delete" %></li>
               <li><%= link "My profile", to: Routes.user_path(@conn, :index) %></li>
               <li><%= link "My cards", to: Routes.card_path(@conn, :index) %></li>
+              <li><%= link "Bookings", to: Routes.booking_path(@conn, :index) %></li>
+              <li><%= link "Search", to: Routes.zone_path(@conn, :index) %></li>
             <% else %>
               <li><%= link "Log in", to: Routes.session_path(@conn, :new) %></li>
             <% end %>
-            <li>
-               <%= link "Bookings", to: Routes.booking_path(@conn, :index) %>
-            </li>
           </ol>
           <ol class="breadcrumb pull-right">
             <%= if ! Agileparking.Authentication.load_current_user(@conn) do %>
