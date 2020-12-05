@@ -3,14 +3,15 @@ defmodule AgileparkingWeb.ZoneController do
     import Ecto.Query
     alias Agileparking.Repo
     alias Agileparking.Sales.Zone
+    alias Agileparking.Bookings.Booking
     alias Agileparking.Forms.Zoneform
-
+    alias Ecto.{Changeset, Multi}
     def is_time(time) do
         case Time.from_iso8601(time) do
           {:ok, t} -> true
           _ -> false
         end
-    end  
+    end
 
 
     def get_time(time) do
@@ -25,7 +26,7 @@ defmodule AgileparkingWeb.ZoneController do
         render(conn, "show.html", zone: zone)
     end
 
-      
+
 
     def distance(placeA, placeB) do
         pointA = Agileparking.Geolocation.find_location(placeA)
@@ -69,10 +70,10 @@ defmodule AgileparkingWeb.ZoneController do
             zones = Enum.map(zones, fn zone  -> {zone, distance(params["name"], zone.name),0,0, 0} end)
             render(conn, "index.html", zones: zones, type: 1)
         end
-    end           
+    end
 
-            
-    
+
+
 
       def edit(conn, %{"id" => id}) do
         zone = Repo.get!(Zone, id)
@@ -91,12 +92,14 @@ defmodule AgileparkingWeb.ZoneController do
 
         #changeset = Booking.changeset(%Booking{}, map1)
         zone = Repo.get!(Zone, id)
-        case zone.vacant > 0 do
+
+
+        case zone.available == true do
           true ->
               booking_struct = Ecto.build_assoc(user, :bookings, Enum.map(zone_params, fn({key, value}) -> {String.to_atom(key), value} end))
               changeset1 = Booking.changeset(booking_struct, zone_params)
               map = %{}
-              map = Map.put(map, :vacant, sub(zone.vacant, 1))
+              map = Map.put(map, :available, false)
               changeset2 = Zone.changeset(zone, map)
               Multi.new
                 |> Multi.insert(:booking, Booking.changeset(changeset1))
@@ -117,5 +120,4 @@ defmodule AgileparkingWeb.ZoneController do
 
       end
 
-      def sub(a, b), do: a - b
   end
