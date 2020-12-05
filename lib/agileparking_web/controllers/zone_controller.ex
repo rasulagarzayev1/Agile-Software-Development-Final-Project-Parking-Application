@@ -48,12 +48,8 @@ defmodule AgileparkingWeb.ZoneController do
         time = "#{time}:#{milis}"
         now = Time.utc_now()
         now = Time.add(now, 7200, :second)
-        IO.puts "PARAMS"
         p =  Agileparking.Geolocation.find_location(address)
-        IO.puts "HE PASAAAAAAAAAAAAAAT"
-        IO.inspect p
         if Enum.at(p,0) == -1 do
-            IO.puts "BROSSA"
             zones = Enum.map(zones, fn zone  -> {zone, -1,2, 0, 0} end)
             render(conn, "index.html", zones: zones,type: 0)
         end
@@ -68,9 +64,7 @@ defmodule AgileparkingWeb.ZoneController do
                 render(conn, "index.html", zones: zones, type: 2)
             end
         else
-            IO.puts "ESTIC AL FREGAOOOOOOOOOOOOO"
             p =  Agileparking.Geolocation.find_location(address)
-            IO.inspect p
             zones = Enum.map(zones, fn zone  -> {zone, 0,0, 0, 0} end)
             render(conn, "index.html", zones: zones,type: 0)    
         end
