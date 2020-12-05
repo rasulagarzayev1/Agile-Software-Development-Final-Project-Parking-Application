@@ -1,11 +1,11 @@
-  <label for="PaymentType">Payment type:</label>
-  <select name="PaymentType" id="PaymentType">
-    <option value="0">Choose payment type</option>
-    <option value="Hourly">Hourly payment</option>
-    <option value="Real">Real time payment</option>
-  </select>
+ <label for="PaymentType">Payment type:</label>
+   <select name="PaymentType" id="PaymentType">
+     <option value="0">Choose payment type</option>
+     <option value="Hourly">Hourly payment</option>
+     <option value="Real">Real time payment</option>
+    </select>
+ <%= form_for @changeset, Routes.zone_path(@conn, :update, @zone), fn zone -> %>
 
-<%= form_for @changeset, Routes.zone_path(@conn, :update, @zone), fn zone -> %>
 
   <div class="form-group">
     <%= label zone, :start_date, class: "control-label" %>
@@ -21,7 +21,24 @@
     <%= error_tag zone, :end_date %>
   </div>
 
-  
+  <div class="form-group">
+      <label>Pay now</label>
+      <input type="checkbox" id="pay" name="pay" value="paay">
+  </div>
+
+  <div class="form-group">
+    <%= label zone, :hourlyPrice, class: "control-label" %>
+    <%= text_input  zone, :hourlyPrice, class: "form-control hourlyPrice" %>
+    <%= error_tag zone, :hourlyPrice %>
+  </div>
+
+  <div class="form-group">
+    <%= label zone, :realTimePrice, class: "control-label" %>
+    <%= text_input  zone, :realTimePrice, class: "form-control" %>
+    <%= error_tag zone, :realTimePrice %>
+  </div>
+
+
 
   <div class="form-group">
     <%= submit "Submit", class: "btn btn-primary", id: "submit"%>
