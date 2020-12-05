@@ -13,10 +13,7 @@
     <strong>realTimePrice:</strong>
     <%= @zone.realTimePrice %>
   </li>
-  <li>
-    <strong>Vacant:</strong>
-    <%= @zone.vacant %>
-  </li>
+
 </ul>
 
 <span id="add"><%= link "Book", to: Routes.zone_path(@conn, :edit, @zone) %></span>
