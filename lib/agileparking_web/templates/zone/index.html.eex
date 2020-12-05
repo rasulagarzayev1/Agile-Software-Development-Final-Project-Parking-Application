@@ -1,15 +1,24 @@
-<h2>Listing parking loots</h2>
+<h2>Listing parking zones</h2>
 
 <%= form_tag("/zones", method: :post) %>
   Address
-  <input name="name" type="text" id="name"/>
-  Hour
-  <input name="hour" type="text" id="hour"/>
-  Minutes
-  <input name="minutes" type="text" id="minutes"/>
-  <button id="search">Search</button> 
+  <input name="name" type="text" id="name" required/>
+  Time (optional)
+  <input name="time" type="text" id="time" placeholder="HH:MM"/>
+  <p id="demo"></p>
+  <button id="search" onclick="myFunction()">Search</button> 
 </form>
 
+
+<%= if @type == 3 do %>
+    <h3>Please enter an address</h3>
+<% end %>
+
+<%= if @type == 0 do %>
+    <h3>Couldn't find any zone</h3>
+<% end %>
+
+<%= if @type == 1 do %>
 <table class="table">
   <thead>
     <tr>
@@ -17,38 +26,58 @@
       <th>Hourly rate</th>
       <th>Real Time rate</th>
       <th>Distance</th>
-      <th>Hourly price</th>
-      <th>real time price</th>
-      <th>Avaible places</th>
       <th>Book</th>
-
     </tr>
   </thead>
   <tbody id="zones-table">
-<%= for zone <- @zones do %>
+    <%= for zone <- @zones do %>
     <tr>
       <td><%= elem(zone,0).name %></td>
       <td><%= elem(zone,0).hourlyPrice %></td>
       <td><%= elem(zone,0).realTimePrice %></td>
       <td><%= elem(zone,1) %></td>
-      <%= if elem(zone,2) == true do %>
+      <td>
+        <%= link "Book", to: Routes.zone_path(@conn, :show, elem(zone,0).id)%>
+      </td>
+    </tr>
+  </tbody>
+  <% end %>
+</table>
+<% end %>
+
+
+<%= if @type == 2 do %>
+<table class="table">
+  <thead>
+    <tr>
+      <th>name</th>
+      <th>Hourly rate</th>
+      <th>Real Time rate</th>
+      <th>Distance</th>
+      <th>Hourly price (EUR)</th>
+      <th>Real Time price (EUR)</th>
+      <th>Book</th>
+    </tr>
+  </thead>
+  <tbody id="zones-table">
+    <%= for zone <- @zones do %>
+    <tr>
+      <td><%= elem(zone,0).name %></td>
+      <td><%= elem(zone,0).hourlyPrice %></td>
+      <td><%= elem(zone,0).realTimePrice %></td>
+      <td><%= elem(zone,1) %></td>
       <td><%= elem(zone,3) %></td>
       <td><%= elem(zone,4) %></td>
-      <% end %>
-      <%= if elem(zone,2) == false do %>
-      <td>-</td>
-      <td>-</td>
-      <td >
-        <%= elem(zone,0).vacant %>
-      </td>
       <td>
         <%= if elem(zone,0).vacant>0 do%>
         <%= link "Book", to: Routes.zone_path(@conn, :show, elem(zone,0).id)%>
         <% end%>
         
       </td>
-      <% end %>
     </tr>
-<% end %>
   </tbody>
+  <% end %>
 </table>
+<% end %>
+
+
