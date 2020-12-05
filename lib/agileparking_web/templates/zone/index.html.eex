@@ -3,11 +3,10 @@
 <%= form_tag("/zones", method: :post) %>
   Address
   <input name="name" type="text" id="name"/>
-  Hour
-  <input name="hour" type="text" id="hour"/>
-  Minutes
-  <input name="minutes" type="text" id="minutes"/>
-  <button id="search">Search</button> 
+  Time (optional)
+  <input name="time" type="text" id="time" placeholder="HH:MM"/>
+  <p id="demo"></p>
+  <button id="search" onclick="myFunction()">Search</button> 
 </form>
 
 <table class="table">
@@ -17,8 +16,8 @@
       <th>Hourly rate</th>
       <th>Real Time rate</th>
       <th>Distance</th>
-      <th>Hourly price</th>
-      <th>real time price</th>
+      <th>Hourly price(EUR)</th>
+      <th>real time price(cents)</th>
       <th>Book</th>
 
     </tr>
@@ -30,11 +29,11 @@
       <td><%= elem(zone,0).hourlyPrice %></td>
       <td><%= elem(zone,0).realTimePrice %></td>
       <td><%= elem(zone,1) %></td>
-      <%= if elem(zone,2) == true do %>
+      <%= if elem(zone,2) == 1 do %>
       <td><%= elem(zone,3) %></td>
       <td><%= elem(zone,4) %></td>
       <% end %>
-      <%= if elem(zone,2) == false do %>
+      <%= if elem(zone,2) == 0 do %>
       <td>-</td>
       <td>-</td>
       <td>
@@ -45,3 +44,21 @@
 <% end %>
   </tbody>
 </table>
+
+
+<script>
+function myFunction() {
+  var x, text;
+
+  // Get the value of the input field with id="numb"
+  x = document.getElementById("time").value;
+
+  // If x is Not a Number or less than one or greater than 10
+  if (isNaN(x) || x < 1 || x > 10) {
+    text = "Input not valid";
+  } else {
+    text = "Input OK";
+  }
+  document.getElementById("demo").innerHTML = text;
+}
+</script>

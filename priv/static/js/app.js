@@ -87,9 +87,9 @@
 /******/ ({
 
 /***/ "../deps/phoenix_html/priv/static/phoenix_html.js":
-/*!*******************************************************************************************!*\
-  !*** C:/Users/Sergi/projectes/agileparking/deps/phoenix_html/priv/static/phoenix_html.js ***!
-  \*******************************************************************************************/
+/*!********************************************************!*\
+  !*** ../deps/phoenix_html/priv/static/phoenix_html.js ***!
+  \********************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
