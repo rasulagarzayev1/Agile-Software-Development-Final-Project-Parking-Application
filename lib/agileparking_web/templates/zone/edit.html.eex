@@ -32,11 +32,6 @@
   </div>
 
 
-  <div class="form-group">
-    <%= label zone, :zone_type, class: "control-label" %>
-    <%= text_input  zone, :zone_type, class: "form-control" %>
-    <%= error_tag zone, :zone_type %>
-  </div>
 
   <div class="form-group">
     <%= label zone, :hourlyPrice, class: "control-label" %>
@@ -76,6 +71,7 @@ let myForm = document.querySelector("form");
 
 let hiddenPaymentType = document.querySelector(".hiddenPaymentType");
 let alertParagraph = document.querySelector(".alert-success")
+
 
 myForm.style.display = "none"
 

@@ -6,9 +6,9 @@ defmodule Agileparking.Bookings.Booking do
     field :end_date, :string
     field :payment_status, :string, default: "New"
     field :start_date, :string
-    field :totalPrice, :string
-    field :paymentType, :string
-    field :parkingStatus, :string
+    field :totalPrice, :string, default: "New"
+    field :paymentType, :string, default: "New"
+    field :parkingStatus, :string, default: "New"
     field :zoneId, :string
     belongs_to :user, Agileparking.Accounts.User
     timestamps()
@@ -17,7 +17,7 @@ defmodule Agileparking.Bookings.Booking do
   @doc false
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:payment_status, :start_date, :end_date, :zone_type])
-    |> validate_required([:payment_status, :start_date, :end_date, :zone_type])
+    |> cast(params, [:payment_status, :start_date, :end_date])
+    |> validate_required([:payment_status, :start_date, :end_date])
   end
 end
