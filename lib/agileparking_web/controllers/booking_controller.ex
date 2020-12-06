@@ -28,8 +28,9 @@ defmodule AgileparkingWeb.BookingController do
 
 
 
-
-    zones=Repo.get_by(Zone,id: booking.zoneId)
+    Repo.get_by(Zone,id: booking.zoneId)
+             |> Ecto.Changeset.change(%{available: true})
+             |>Repo.update()
 
     case booking.payment_status=="Pending" do
       true->
@@ -41,9 +42,7 @@ defmodule AgileparkingWeb.BookingController do
             Repo.get_by(User,id: user.id)
             |> Ecto.Changeset.change(%{balance: Float.to_string(sub(current_balance,totalPrice))})
             |>Repo.update()
-            Repo.get_by(Zone,id: booking.zoneId)
-             |> Ecto.Changeset.change(%{available: true})
-             |>Repo.update()
+
             _ -> conn
             |> put_flash(:error, "There is not enough balance. Please increase balance")
             |> redirect(to: Routes.booking_path(conn, :index))
