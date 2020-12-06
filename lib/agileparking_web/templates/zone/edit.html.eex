@@ -120,10 +120,16 @@ startTime.addEventListener('keyup', function (event) {
     if (!isValid) {
         errorForstartTime.innerText = "Must be correct form";
         this.style.marginBottom = "0";
-    } else if (endTime.value.length == 5 && startTimeArr[0] > endTimeArr[0]) {
+    } else if ((endTime.value.length == 5 && startTimeArr[0] > endTimeArr[0])
+                ||((startTimeArr[0] == endTimeArr[0]) && startTimeArr[1] > endTimeArr[1]) ) {
         errorForendTime.innerText = "End time must be grater than start time";
         this.style.marginBottom = "0";
     } else {
+        if(endTime.value.length == 5){
+            payingNow.style.display = "block"
+        }else{
+            payingNow.style.display = "none"
+        }
         errorForstartTime.innerText = "";
         this.style.marginBottom = "1em";
         if (this.value.length == 5 && endTime.value.length == 5) {
@@ -180,7 +186,6 @@ endTime.addEventListener('keyup', function (event) {
     invalidfeedbacks.forEach(function (label) {
         label.innerText = ""
     });
-    payingNow.style.display = "block"
     let startTimeArr = startTime.value.split(":");
     let endTimeArr = this.value.split(":");
     var isValid = /^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/.test(this.value);
@@ -191,11 +196,17 @@ endTime.addEventListener('keyup', function (event) {
         errorForendTime.innerText = "";
         alertParagraph.innerText = "Your total payment depends on end time."
         payingNow.style.display = "none";
-    } else if (startTime.value.length == 5 && startTimeArr[0] > endTimeArr[0]) {
+    } else if ((startTime.value.length == 5 && startTimeArr[0] > endTimeArr[0])
+                ||((startTimeArr[0] == endTimeArr[0]) && startTimeArr[1] > endTimeArr[1]) ) {
         errorForendTime.innerText = "End time must be grater than start time";
         this.style.marginBottom = "0";
     }
     else {
+        if(startTime.value.length == 5){
+            payingNow.style.display = "block"
+        }else{
+            payingNow.style.display = "none"
+        }
         errorForendTime.innerText = "";
         this.style.marginBottom = "1em";
         if (this.value.length == 5 && startTime.value.length == 5) {
@@ -243,7 +254,7 @@ endTime.addEventListener('keyup', function (event) {
           totalPayment.value = "";
         }
     }
-    if(this.value==""){
+    if(this.value == ""){
         price = 0
         errorForendTime.innerText = "";
         alertParagraph.innerText = "Your total payment depends on end time."
