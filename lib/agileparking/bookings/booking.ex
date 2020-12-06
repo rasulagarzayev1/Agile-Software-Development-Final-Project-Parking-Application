@@ -3,12 +3,12 @@ defmodule Agileparking.Bookings.Booking do
   import Ecto.Changeset
 
   schema "bookings" do
-    field :end_date, :string
-    field :payment_status, :string, default: "New"
+    field :end_date, :string, default: "-"
+    field :payment_status, :string, default: "Pending"
     field :start_date, :string
-    field :totalPrice, :string, default: "New"
-    field :paymentType, :string, default: "New"
-    field :parkingStatus, :string, default: "New"
+    field :totalPrice, :string, default: "0"
+    field :paymentType, :string, default: "-"
+    field :parkingStatus, :string, default: "Started"
     field :zoneId, :string
     belongs_to :user, Agileparking.Accounts.User
     timestamps()
