@@ -68,7 +68,7 @@ defmodule AgileparkingWeb.ZonesControllerTest do
   
   
   test "Hourly price calculated correctly", %{conn: conn} do
-    #todo
+    Repo.insert!(%Zone{name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true})
     price = 2
     assert  price == 1
   end
