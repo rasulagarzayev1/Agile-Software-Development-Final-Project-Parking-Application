@@ -54,7 +54,8 @@ defmodule AgileparkingWeb.ZoneController do
 
     def create(conn, params) do
         type = 0
-        zones = Repo.all(Zone)
+        query = from t in Zone, where: t.available == true, select: t
+        zones = Repo.all(query)
         address = params["name"]
         time = params["time"]
         milis = "00"
@@ -72,11 +73,6 @@ defmodule AgileparkingWeb.ZoneController do
                     zones = Enum.map(zones, fn zone  -> {zone, distance(params["name"], zone.name),0,0, 0} end)
                     render(conn, "index.html", zones: zones, type: 1)
                 else
-                    IO.puts "hores!!!"
-                    IO.inspect now.hour
-                    IO.inspect tt.hour
-                    IO.inspect now.minute
-                    IO.inspect tt.minute
                     zones = Enum.map(zones, fn zone  -> {zone, distance(params["name"], zone.name),0,compute_real_time(tt, zone.realTimePrice), compute_hourly(tt, zone.hourlyPrice)} end)
                     render(conn, "index.html", zones: zones, type: 2)
                 end
