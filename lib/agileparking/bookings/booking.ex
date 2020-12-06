@@ -6,7 +6,10 @@ defmodule Agileparking.Bookings.Booking do
     field :end_date, :string
     field :payment_status, :string, default: "New"
     field :start_date, :string
-    field :zone_type, :string
+    field :totalPrice, :string
+    field :paymentType, :string
+    field :parkingStatus, :string
+    field :zoneId, :string
     belongs_to :user, Agileparking.Accounts.User
     timestamps()
   end
