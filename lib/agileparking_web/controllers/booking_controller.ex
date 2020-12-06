@@ -27,9 +27,7 @@ defmodule AgileparkingWeb.BookingController do
     booking=Bookings.get_booking!(id)
 
 
-    Repo.get_by(Zone,id: booking.zoneId)
-             |> Ecto.Changeset.change(%{available: true})
-             |>Repo.update()
+
 
     zones=Repo.get_by(Zone,id: booking.zoneId)
 
@@ -37,22 +35,28 @@ defmodule AgileparkingWeb.BookingController do
       true->
         {current_balance,_}=Float.parse(user.balance)
         {totalPrice,_}=Float.parse(booking.totalPrice)
-        IO.puts "----------------------------------------------------"
-        IO.puts sub(current_balance,totalPrice)
 
-        IO.puts "-----------------------------------------------------"
         case sub(current_balance,totalPrice)>0 do
           true->
             Repo.get_by(User,id: user.id)
             |> Ecto.Changeset.change(%{balance: Float.to_string(sub(current_balance,totalPrice))})
             |>Repo.update()
+            Repo.get_by(Zone,id: booking.zoneId)
+             |> Ecto.Changeset.change(%{available: true})
+             |>Repo.update()
+            _ -> conn
+            |> put_flash(:error, "There is not enough balance. Please increase balance")
+            |> redirect(to: Routes.booking_path(conn, :index))
         end
     end
+    {:ok, _booking} = Repo.get_by(Booking,id: booking.id)
+                              |>Ecto.Changeset.change(%{parkingStatus: "Finished"})
+                              |>Repo.update()
 
-    {:ok, _booking} = Bookings.delete_booking(booking)
     conn
     |> put_flash(:info,"Booking finished succesfully")
     |> redirect(to: Routes.booking_path(conn,:index))
+
   end
 
   def sub(a, b), do: a - b
