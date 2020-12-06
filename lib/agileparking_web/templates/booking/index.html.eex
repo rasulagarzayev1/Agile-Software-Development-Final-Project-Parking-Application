@@ -10,7 +10,6 @@
       <th>paymentType</th>
       <th>parkingStatus</th>
       <th>zoneId</th>
-
       <th></th>
     </tr>
   </thead>
