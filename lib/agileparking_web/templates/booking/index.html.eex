@@ -23,12 +23,16 @@
       <td><%= booking.paymentType %></td>
       <td><%= booking.parkingStatus %></td>
       <td><%= booking.zoneId %></td>
-
+      <%= if booking.parkingStatus=="Finished" do%>
+      
+      <% else %>
       <td>
+
         <span><%= link "Show", to: Routes.booking_path(@conn, :show, booking) %></span>
         <span><%= link "Extend", to: Routes.booking_path(@conn, :edit, booking) %></span>
         <span><%= link "Finish", to: Routes.booking_path(@conn, :delete, booking), method: :delete, data: [confirm: "Are you sure?"] %></span>
       </td>
+      <%end%>
     </tr>
 <% end %>
   </tbody>

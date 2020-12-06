@@ -1,5 +1,12 @@
-<h1>Edit Booking</h1>
+<%= form_for @changeset, Routes.booking_path(@conn, :update, @booking), fn book -> %>
 
-<%= render "form.html", Map.put(assigns, :action, Routes.booking_path(@conn, :update, @booking)) %>
+  <div class="form-group">
+    <%= label book, :end_date, class: "control-label" %>
+    <%= text_input  book, :end_date, class: "form-control" %>
+    <%= error_tag book, :end_date %>
+  </div>
 
-<span><%= link "Back", to: Routes.booking_path(@conn, :index) %></span>
+  <div class="form-group">
+    <%= submit "Submit", class: "btn btn-primary", id: "submit"%>
+  </div>
+<% end %>
