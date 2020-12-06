@@ -5,6 +5,19 @@ defmodule AgileparkingWeb.ZoneController do
     alias Agileparking.Sales.Zone
     alias Agileparking.Forms.Zoneform
 
+
+    def compute_hourly(time, price) do
+      now = Time.utc_now()
+      now = Time.add(now, 7200, :second)
+      price*(time.hour - now.hour)
+    end
+
+    def compute_real_time(time, price) do
+      now = Time.utc_now()
+      now = Time.add(now, 7200, :second)
+      Float.round(((price*((time.minute + time.hour*60) - (now.minute + now.hour*60)))/100/5),2)
+    end
+
     def is_time(time) do
         case Time.from_iso8601(time) do
           {:ok, t} -> true
@@ -59,7 +72,12 @@ defmodule AgileparkingWeb.ZoneController do
                     zones = Enum.map(zones, fn zone  -> {zone, distance(params["name"], zone.name),0,0, 0} end)
                     render(conn, "index.html", zones: zones, type: 1)
                 else
-                    zones = Enum.map(zones, fn zone  -> {zone, distance(params["name"], zone.name),0,((zone.realTimePrice*((tt.minute + tt.hour*60) - (now.minute + now.hour*60)))/100), zone.hourlyPrice*tt.hour - now.hour} end)
+                    IO.puts "hores!!!"
+                    IO.inspect now.hour
+                    IO.inspect tt.hour
+                    IO.inspect now.minute
+                    IO.inspect tt.minute
+                    zones = Enum.map(zones, fn zone  -> {zone, distance(params["name"], zone.name),0,compute_real_time(tt, zone.realTimePrice), compute_hourly(tt, zone.hourlyPrice)} end)
                     render(conn, "index.html", zones: zones, type: 2)
                 end
             else

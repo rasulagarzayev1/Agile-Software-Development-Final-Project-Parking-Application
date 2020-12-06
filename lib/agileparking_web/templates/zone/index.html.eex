@@ -19,15 +19,14 @@
   <thead>
     <tr>
       <th>Name</th>
-      <th>Hourly rate</th>
-      <th>Real Time rate</th>
+      <th>Hourly rate (EUR)</th>
+      <th>Real Time rate (cents)</th>
       <th>Distance</th>
       <th>Book</th>
     </tr>
   </thead>
   <tbody id="zones-table">
     <%= for zone <- @zones do %>
-        <%= if elem(zone,1) < 1000 do %>
     <tr>
       <td><%= elem(zone,0).name %></td>
       <td><%= elem(zone,0).hourlyPrice %></td>
@@ -39,7 +38,6 @@
     </tr>
   </tbody>
   <% end %>
-    <% end %>
 
 </table>
 <% end %>
@@ -53,28 +51,26 @@
       <th>Hourly rate</th>
       <th>Real Time rate</th>
       <th>Distance</th>
-      <th>Hourly price</th>
-      <th>Real time price</th>
+      <th>Hourly price (EUR)</th>
+      <th>Real time price (EUR)</th>
       <th>Book</th>
     </tr>
   </thead>
   <tbody id="zones-table">
     <%= for zone <- @zones do %>
-            <%= if elem(zone,1) < 1000 do %>
 
     <tr>
       <td><%= elem(zone,0).name %></td>
       <td><%= elem(zone,0).hourlyPrice %></td>
       <td><%= elem(zone,0).realTimePrice %></td>
-      <td><%= elem(zone,1) %></td>
-      <td><%= elem(zone,3) %></td>
+      <td><%= elem(zone,2) %></td>
       <td><%= elem(zone,4) %></td>
+      <td><%= elem(zone,3) %></td>
       <td>
         <%= link "Book", to: Routes.zone_path(@conn, :show, elem(zone,0).id)%>
       </td>
     </tr>
   </tbody>
-  <% end %>
     <% end %>
 
 </table>
