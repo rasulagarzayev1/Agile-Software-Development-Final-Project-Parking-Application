@@ -3,6 +3,7 @@ defmodule AgileparkingWeb.ZoneController do
     import Ecto.Query
     alias Agileparking.Repo
     alias Agileparking.Sales.Zone
+    alias Agileparking.Accounts.User
     alias Agileparking.Bookings.Booking
     alias Agileparking.Forms.Zoneform
     alias Ecto.{Changeset, Multi}
@@ -84,26 +85,70 @@ defmodule AgileparkingWeb.ZoneController do
 
       def update(conn, %{"id" => id, "zone" => zone_params}) do
         user = Agileparking.Authentication.load_current_user(conn)
-        # map1 = %{}
-        # map1 = Map.put(map1, :payment_status, zone_params["payment_status"])
-        # map1 = Map.put(map1, :start_date, "1234a")
-        # map1 = Map.put(map1, :end_date, "1234a")
-        # map1 = Map.put(map1, :zone_type, "1")
-
-        #changeset = Booking.changeset(%Booking{}, map1)
         zone = Repo.get!(Zone, id)
+        zone_params = Map.put(zone_params, "zoneId", id)
+        zone_params = Map.put(zone_params, "paymentType", zone_params["payment_type"])
 
+        p = case zone_params["end_date"] != "" do
+            true ->
+              case zone_params["payment_type"] == "Hourly" do
+                true -> p = totalPriceHourly(zone_params["start_date"], zone_params["end_date"], zone.hourlyPrice)
+                _ -> p = totalPriceReal(zone_params["start_date"], zone_params["end_date"],  zone.realTimePrice)
+              end
+          _ -> IO.puts("bye")
+        end
+        zone_params = Map.put(zone_params, "totalPrice", to_string(p))
 
-        case zone.available == true do
+          case zone_params["pay_now"] == "true" do
+            true ->
+                  {current_balance, _} = Float.parse(user.balance)
+                  case current_balance > p do
+                    true -> current_balance = sub(current_balance,p)
+                    _ -> conn
+                    |> put_flash(:error, "There is not enough balance. Please increase balance")
+                    |> redirect(to: Routes.zone_path(conn, :index))
+                  end
+            _ -> IO.puts("--")
+          end
+
+          balance = case zone_params["pay_now"] == "true" do
+            true ->
+                  {current_balance, _} = Float.parse(user.balance)
+                  case current_balance > p do
+                    true -> current_balance = sub(current_balance,p)
+                    _ -> current_balance = current_balance
+                  end
+            _ -> {current_balance, _} = Float.parse(user.balance)
+                  balance = current_balance
+          end
+
+          {current_balance, _} = Float.parse(user.balance)
+
+          paymentStatus = case zone_params["pay_now"] == "true" and balance != current_balance do
+                            true -> paymentStatus = "Done"
+                            _ -> paymentStatus = "Pending"
+                          end
+
+          zone_params = Map.put(zone_params, "payment_status", paymentStatus)
+
+          map1 = %{}
+          map1 = Map.put(map1, :password, Agileparking.Authentication.load_current_user(conn).email)
+          map1 = Map.put(map1, :email, Agileparking.Authentication.load_current_user(conn).email)
+          map1 = Map.put(map1, :balance, to_string(balance))
+        case zone.available == true and ((zone_params["pay_now"] == "true" and balance != current_balance) or zone_params["pay_now"] != "true") do
           true ->
+
               booking_struct = Ecto.build_assoc(user, :bookings, Enum.map(zone_params, fn({key, value}) -> {String.to_atom(key), value} end))
               changeset1 = Booking.changeset(booking_struct, zone_params)
               map = %{}
               map = Map.put(map, :available, false)
               changeset2 = Zone.changeset(zone, map)
+              changeset3 = User.changeset(user, map1)
+
               Multi.new
                 |> Multi.insert(:booking, Booking.changeset(changeset1))
                 |> Multi.update(:zone, Zone.changeset(changeset2))
+                |> Multi.update(:user, User.changeset(changeset3))
                 |> Repo.transaction
 
               conn
@@ -120,4 +165,36 @@ defmodule AgileparkingWeb.ZoneController do
 
       end
 
+      def product(a, b), do: a * b
+      def sum(a, b), do: a + b
+      def sub(a, b), do: a - b
+      def divi(a, b), do: a / b
+
+      def totalTime(start_date, end_date) do
+        {startHour, _} = Integer.parse(String.slice(start_date, 0..1))
+        {startMin, _} = Integer.parse(String.slice(start_date, 3..4))
+        startTotalMin = sum(product(startHour, 60),startMin)
+
+        {endHour, _} = Integer.parse(String.slice(end_date, 0..1))
+        {endMin, _} = Integer.parse(String.slice(end_date, 3..4))
+        endTotalMin = sum(product(endHour, 60),endMin)
+        differenceMin = sub(endTotalMin, startTotalMin)
+      end
+
+      def totalPriceHourly(start_date, end_date, hourlyPrice) do
+        time = totalTime(start_date, end_date)
+        case Integer.mod(time , 60) == 0 do
+          true -> totalPrice = product(divi(time, 60), hourlyPrice)
+          _ -> totalPrice = product(sum(divi(sub(time, Integer.mod(time , 60)), 60),1), hourlyPrice)
+        end
+      end
+
+      def totalPriceReal(start_date, end_date, realTimePrice) do
+        time = totalTime(start_date, end_date)
+        case Integer.mod(time , 5) == 0 do
+          true -> totalPrice = product(divi(time, 5), divi(realTimePrice,100))
+          _ -> totalPrice = product(sum(divi(sub(time, Integer.mod(time , 5)), 5),1), divi(realTimePrice,100))
+        end
+
+      end
   end
