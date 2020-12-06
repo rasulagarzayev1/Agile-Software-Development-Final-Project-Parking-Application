@@ -27,6 +27,7 @@
   </thead>
   <tbody id="zones-table">
     <%= for zone <- @zones do %>
+        <%= if elem(zone,1) < 1000 do %>
     <tr>
       <td><%= elem(zone,0).name %></td>
       <td><%= elem(zone,0).hourlyPrice %></td>
@@ -38,6 +39,8 @@
     </tr>
   </tbody>
   <% end %>
+    <% end %>
+
 </table>
 <% end %>
 
@@ -57,6 +60,8 @@
   </thead>
   <tbody id="zones-table">
     <%= for zone <- @zones do %>
+            <%= if elem(zone,1) < 1000 do %>
+
     <tr>
       <td><%= elem(zone,0).name %></td>
       <td><%= elem(zone,0).hourlyPrice %></td>
@@ -70,6 +75,8 @@
     </tr>
   </tbody>
   <% end %>
+    <% end %>
+
 </table>
 <% end %>
 
