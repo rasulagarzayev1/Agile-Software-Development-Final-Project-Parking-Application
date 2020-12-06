@@ -135,7 +135,7 @@ defmodule AgileparkingWeb.ZoneController do
           map1 = Map.put(map1, :password, Agileparking.Authentication.load_current_user(conn).email)
           map1 = Map.put(map1, :email, Agileparking.Authentication.load_current_user(conn).email)
           map1 = Map.put(map1, :balance, to_string(balance))
-        case zone.available == true and ((zone_params["pay_now"] == "true" and balance != current_balance) or zone_params["pay_now"] == "false") do
+        case zone.available == true and ((zone_params["pay_now"] == "true" and balance != current_balance) or zone_params["pay_now"] != "true") do
           true ->
 
               booking_struct = Ecto.build_assoc(user, :bookings, Enum.map(zone_params, fn({key, value}) -> {String.to_atom(key), value} end))
