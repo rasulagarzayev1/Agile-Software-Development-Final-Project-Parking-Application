@@ -86,6 +86,9 @@ defmodule AgileparkingWeb.ZoneController do
       def update(conn, %{"id" => id, "zone" => zone_params}) do
         user = Agileparking.Authentication.load_current_user(conn)
         zone = Repo.get!(Zone, id)
+        IO.puts("------------")
+        IO.inspect(zone_params)
+        IO.puts("------------")
         zone_params = Map.put(zone_params, "zoneId", id)
         zone_params = Map.put(zone_params, "paymentType", zone_params["payment_type"])
 
@@ -98,6 +101,8 @@ defmodule AgileparkingWeb.ZoneController do
           _ -> IO.puts("bye")
         end
         zone_params = Map.put(zone_params, "totalPrice", to_string(p))
+
+
 
           case zone_params["pay_now"] == "true" do
             true ->
@@ -135,7 +140,7 @@ defmodule AgileparkingWeb.ZoneController do
           map1 = Map.put(map1, :password, Agileparking.Authentication.load_current_user(conn).email)
           map1 = Map.put(map1, :email, Agileparking.Authentication.load_current_user(conn).email)
           map1 = Map.put(map1, :balance, to_string(balance))
-        case zone.available == true and ((zone_params["pay_now"] == "true" and balance != current_balance) or zone_params["pay_now"] != "true") do
+        case zone.available == true and p > 0 and ((zone_params["pay_now"] == "true" and balance != current_balance) or zone_params["pay_now"] != "true") do
           true ->
 
               booking_struct = Ecto.build_assoc(user, :bookings, Enum.map(zone_params, fn({key, value}) -> {String.to_atom(key), value} end))
@@ -153,12 +158,19 @@ defmodule AgileparkingWeb.ZoneController do
 
               conn
               |> put_flash(:info, "Booked successfully.")
-              |> redirect(to: Routes.page_path(conn, :index))
+              |> redirect(to: Routes.booking_path(conn, :index))
 
 
-            _ -> conn
-              |> put_flash(:error, "There is no an available slot. Please choose new parking area")
-              |> redirect(to: Routes.zone_path(conn, :index))
+            _ ->
+              case p < 0 do
+                true -> conn
+                  |> put_flash(:error, "The start always should occur before the end time")
+                  |> redirect(to: Routes.zone_path(conn, :index))
+                _ ->  conn
+                |> put_flash(:error, "There is no an available slot. Please choose new parking area")
+                |> redirect(to: Routes.zone_path(conn, :index))
+              end
+
 
         end
 

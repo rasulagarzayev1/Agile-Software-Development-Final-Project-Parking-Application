@@ -21,7 +21,7 @@ defmodule SearchParkingContext do
 
 
       # Create parking spots
-      [%{name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16}]
+      [%{name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true}]
       |> Enum.map(fn zone_data -> Zone.changeset(%Zone{}, zone_data) end)
       |> Enum.each(fn changeset -> Repo.insert!(changeset) end)
       end
