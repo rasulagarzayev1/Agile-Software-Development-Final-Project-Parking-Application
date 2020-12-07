@@ -84,6 +84,7 @@ defmodule AgileparkingWeb.ZonesControllerTest do
     time = "#{time}:#{milis}"
     time = elem(Time.from_iso8601(time),1)
     price = 2*(time.hour - now.hour)
+    if price == 0 do price = 2 end
     conn =
     post conn, "/zones", %{
       name: "Puiestee 110",

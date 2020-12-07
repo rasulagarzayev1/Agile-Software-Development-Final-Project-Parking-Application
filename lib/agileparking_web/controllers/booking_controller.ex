@@ -32,18 +32,10 @@ defmodule AgileparkingWeb.BookingController do
   def update(conn,%{"id" => id, "booking" => booking_params}) do
 
     booking=Repo.get_by(Booking,id: id)
+
     zones=Repo.get_by(Zone,id: booking.zoneId)
 
-
-
-
-
     total=totalPriceHourly(booking.start_date,booking_params["end_date"],zones.hourlyPrice)
-
-    IO.puts "---------------------------"
-    IO.puts total
-
-    IO.puts "-------------------------------------"
 
     Repo.get_by(Booking,id: id)
      |>Ecto.Changeset.change(%{end_date: booking_params["end_date"],totalPrice: Float.to_string(total) })
@@ -65,8 +57,7 @@ defmodule AgileparkingWeb.BookingController do
              |> Ecto.Changeset.change(%{available: true})
              |>Repo.update()
 
-    case booking.payment_status=="Pending" do
-      true->
+    if booking.payment_status=="Pending" do
         case booking.end_date !="-" do
           true->
             {current_balance,_}=Float.parse(user.balance)
@@ -83,7 +74,6 @@ defmodule AgileparkingWeb.BookingController do
            _ -> conn
              |> put_flash(:error,"Please enter the end date for calculation")
              |> redirect(to: Routes.booking_path(conn,:edit,booking))
-
         end
     end
     {:ok, _booking} = Repo.get_by(Booking,id: booking.id)

@@ -1,4 +1,4 @@
-<h2>Listing parking loots</h2>
+<h2>Listing parking lots</h2>
 
 <%= form_tag("/zones", method: :post) %>
   Address

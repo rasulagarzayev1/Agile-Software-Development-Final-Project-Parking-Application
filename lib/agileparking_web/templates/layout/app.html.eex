@@ -15,7 +15,7 @@
           <ol class="breadcrumb pull-right">
             <%= if Agileparking.Authentication.load_current_user(@conn) do %>
               <li>Hello <%= Agileparking.Authentication.load_current_user(@conn).email %></li>
-              <li><%= link "Log out", to: Routes.session_path(@conn, :delete, Agileparking.Authentication.load_current_user(@conn)), method: "delete" %></li>
+              <li><%= link "Log out", to: Routes.session_path(@conn, :delete, Agileparking.Authentication.load_current_user(@conn)), id: "logout_button", method: "delete" %></li>
               <li><%= link "My profile", to: Routes.user_path(@conn, :index) %></li>
               <li><%= link "My cards", to: Routes.card_path(@conn, :index) %></li>
               <li><%= link "Bookings", to: Routes.booking_path(@conn, :index) %></li>
@@ -31,8 +31,8 @@
           </ol>
           <span class="logo"></span>
           </nav>
-          <a href="https://phoenixframework.org/" class="phx-logo">
-            <img src="<%= Routes.static_path(@conn, "/images/phoenix.png") %>" alt="Phoenix Framework Logo"/>
+          <a href="https://phoenixframework.org/" class="phx-logo center">
+            <img src="<%= Routes.static_path(@conn, "/images/agileparking.png") %>" alt="Phoenix Framework Logo"/>
           </a>
         </section>
       </header>
