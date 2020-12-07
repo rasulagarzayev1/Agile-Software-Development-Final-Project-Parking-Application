@@ -151,7 +151,22 @@ defmodule BookingContext do
     {:ok, state}
   end
 
+  and_ ~r/^I click checkbox$/, fn state ->
+    click({:id, "pay"})
+    :timer.sleep(1000)
+    {:ok, state}
+  end
 
+  and_ ~r/^I click finish button$/, fn state ->
+    click({:id, "finish"})
+    :timer.sleep(1000)
+    {:ok, state}
+  end
 
+  then_ ~r/^I should recieve success message2$/, fn state ->
+    assert visible_in_page? ~r/Booking finished succesfully/
+    :timer.sleep(1000)
+    {:ok, state}
+  end
 
 end
