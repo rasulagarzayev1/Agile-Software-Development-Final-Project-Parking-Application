@@ -6,7 +6,7 @@
   Time (optional)
   <input name="time" type="text" id="time" placeholder="HH:MM"/>
   <p id="demo"></p>
-  <button id="search" onclick="myFunction()">Search</button> 
+  <button id="search" onclick="myFunction()">Search</button>
 </form>
 
 
@@ -33,7 +33,9 @@
       <td><%= elem(zone,0).realTimePrice %></td>
       <td><%= elem(zone,1) %></td>
       <td>
+      <span id = "goShowDetail">
         <%= link "Book", to: Routes.zone_path(@conn, :show, elem(zone,0).id)%>
+      </span>
       </td>
     </tr>
   </tbody>
@@ -67,7 +69,9 @@
       <td><%= elem(zone,4) %></td>
       <td><%= elem(zone,3) %></td>
       <td>
+        <span id = "goShowDetail">
         <%= link "Book", to: Routes.zone_path(@conn, :show, elem(zone,0).id)%>
+        </span>
       </td>
     </tr>
   </tbody>
@@ -75,5 +79,3 @@
 
 </table>
 <% end %>
-
-
