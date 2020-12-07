@@ -24,4 +24,11 @@
 </ul>
 
 <span id="add"><%= link "Add balance", to: Routes.user_path(@conn, :edit, @user) %></span>
-<span><%= link "Back", to: Routes.user_path(@conn, :index) %></span>
+<span class="back"><%= link "Back", to: Routes.user_path(@conn, :index) %></span>
+<style>
+.back a{
+  color:red!important;
+  display:inline-block;
+  padding-left:15px
+}
+</style>
