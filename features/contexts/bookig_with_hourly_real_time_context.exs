@@ -13,18 +13,24 @@ defmodule BookigWithHourlyRealTimeContext do
       Hound.start_session
       Ecto.Adapters.SQL.Sandbox.checkout(Agileparking.Repo)
       Ecto.Adapters.SQL.Sandbox.mode(Agileparking.Repo, {:shared, self()})
-
       # Register and login new user for BDD tests
       [%{name: "sergi", email: "sergimartinez@gmail.cat", license_number: "123456789", password: "123456", balance: "12"}]
       |> Enum.map(fn user_data -> User.changeset(%User{}, user_data) end)
       |> Enum.each(fn changeset -> Repo.insert!(changeset) end)
 
-      # Create parking spots
-      [%{id: 1, name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true}]
-      |> Enum.map(fn zone_data -> Zone.changeset(%Zone{}, zone_data) end)
-      |> Enum.each(fn changeset -> Repo.insert!(changeset) end)
+
+    # Create parking spots
+
+    [%{name: "Puiestee 114", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "B"},
+     %{name: "Puiestee 113", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "A"}]
+    |> Enum.map(fn zone_data -> Zone.changeset(%Zone{}, zone_data) end)
+    |> Enum.each(fn changeset -> Repo.insert!(changeset) end)
 
 
+    end
+
+    scenario_finalize fn _status, _state ->
+      Ecto.Adapters.SQL.Sandbox.checkin(Agileparking.Repo)
     end
 
   given_ ~r/^I am logged in into the system$/, fn state ->
@@ -53,29 +59,76 @@ defmodule BookigWithHourlyRealTimeContext do
     {:ok, state}
   end
 
-  and_ ~r/^I press submit$/, fn state ->
+  and_ ~r/^I press submit1$/, fn state ->
     click({:id, "search"})
     :timer.sleep(3000)
     {:ok, state}
   end
 
   and_ ~r/^I should receive a table with all the available spaces and their respective distances$/, fn state ->
-    # assert visible_in_page? ~r/name/
-    #   assert visible_in_page? ~r/Hourly price/
-    #   assert visible_in_page? ~r/Real Time price/
-    #   assert visible_in_page? ~r/Distance/
-    #   assert (find_all_elements(:id, "zones-table") |> Enum.count) > 0
+    assert visible_in_page? ~r/Name/
+      assert visible_in_page? ~r/Hourly rate/
+      assert visible_in_page? ~r/Real Time rate/
+      assert visible_in_page? ~r/Distance/
+      assert (find_all_elements(:id, "zones-table") |> Enum.count) > 0
+      {:ok, state}
+  end
+
+  and_ ~r/^I click goShowDetail button and go show booking page$/, fn state ->
+    click({:id, "goShowDetail"})
+    :timer.sleep(1000)
     {:ok, state}
   end
 
-  and_ ~r/^I click Book button and go show booking page$/, fn state ->
-    click({:id, "goShowDetail"})
+  and_ ~r/^I am on the zones edit page$/, fn state ->
     {:ok, state}
-  # end
+  end
+
+  and_ ~r/^I click add button and go zones edit page$/, fn state ->
+    click({:id, "add"})
+    :timer.sleep(1000)
+    {:ok, state}
+  end
+
+  and_ ~r/^I click the payment type$/, fn state ->
+    click({:id, "PaymentType"})
+    :timer.sleep(1000)
+    {:ok, state}
+  end
+
+  and_ ~r/^I select hourly payment type$/, fn state ->
+    click({:id, "1"})
+    :timer.sleep(1000)
+    {:ok, state}
+  end
+
+  and_ ~r/^I select real payment type$/, fn state ->
+  click({:id, "2"})
+  :timer.sleep(1000)
+  {:ok, state}
+  end
+
+  and_ ~r/^I fill start and end date with "(?<argument_one>[^"]+)" and "(?<argument_two>[^"]+)"$/,
+  fn state, %{argument_one: argument_one,argument_two: argument_two} ->\
+    fill_field({:id, "zone_start_date"}, argument_one)
+    fill_field({:id, "zone_end_date"}, argument_two)
+    {:ok, state}
+  end
+
+  and_ ~r/^I press submit2$/, fn state ->
+    click({:id, "submit"})
+    :timer.sleep(1000)
+    {:ok, state}
+  end
+
+  then_ ~r/^I should recieve success message$/, fn state ->
+    assert visible_in_page? ~r/Booked successfully./
+    :timer.sleep(1000)
+    {:ok, state}
+  end
 
 
 
-end
 
 
 
