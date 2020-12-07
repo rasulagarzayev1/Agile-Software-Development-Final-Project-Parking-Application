@@ -14,7 +14,7 @@ defmodule AgileparkingWeb.ZoneController do
       now = Time.add(now, 7200, :second)
       if (time.hour - now.hour) == 0 do
         price*1
-      else         
+      else
         price*(time.hour - now.hour)
       end
     end

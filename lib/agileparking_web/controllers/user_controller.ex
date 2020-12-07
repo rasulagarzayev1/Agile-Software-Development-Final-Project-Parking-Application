@@ -69,5 +69,28 @@ defmodule AgileparkingWeb.UserController do
         end
       end
 
+      @spec paynow(Plug.Conn.t(), any) :: Plug.Conn.t()
+      def paynow(conn,%{"id"=>id}) do
+        user =Repo.get_by(User,id: id)
+        {balance,_}=Float.parse(user.balance)
+        {monthly_bill,_}=Float.parse(user.monthly_bill)
+
+        if sub(balance,monthly_bill)>0 do
+          Repo.get_by(User,id: id)
+          |>Ecto.Changeset.change(%{balance: Float.to_string(sub(balance,monthly_bill)), monthly_bill: "0.00"})
+          |>Repo.update()
+
+          conn
+          |>put_flash(:info,"Your payment has been paid succesfully")
+          |>redirect(to: Routes.user_path(conn,:index))
+
+        else
+           conn
+           |>put_flash(:error,"Your balance is not sufficent,please increase your balance")
+           |>redirect(to: Routes.user_path(conn,:index))
+        end
+      end
+
       def sum(a, b), do: a + b
+      def sub(a,b), do: a-b
   end

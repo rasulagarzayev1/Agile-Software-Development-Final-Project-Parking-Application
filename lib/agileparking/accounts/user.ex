@@ -9,6 +9,7 @@ defmodule Agileparking.Accounts.User do
     field :password, :string, virtual: true
     field :hashed_password, :string
     field :balance, :string, default: "0.00"
+    field :monthly_bill, :string, default: "0.00"
     has_many :cards, Agileparking.Accounts.Card
     has_many :bookings, Agileparking.Bookings.Booking
     timestamps()

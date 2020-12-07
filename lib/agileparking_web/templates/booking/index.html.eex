@@ -29,10 +29,12 @@
       <td>
 
         <span><%= link "Show", to: Routes.booking_path(@conn, :show, booking) %></span>
-         <%= if booking.payment_status != "Done" do %>
+         <%= if booking.payment_status != "Done" and booking.paymentType != "Real" do %>
         <span><%= link "Extend", to: Routes.booking_path(@conn, :edit, booking) %></span>
+        
         <%= end%>
-        <span><%= link "Finish", to: Routes.booking_path(@conn, :delete, booking), method: :delete, data: [confirm: "Are you sure?"] %></span>
+        <span><%= link "Pay Later", to: Routes.booking_path(@conn, :paylater, booking.id) %></span>
+        <span><%= link "Finish", to: Routes.booking_path(@conn, :delete, booking), method: :delete%></span>
       </td>
       <%end%>
     </tr>
@@ -40,4 +42,3 @@
   </tbody>
 </table>
 
-<span><%= link "New Booking", to: Routes.booking_path(@conn, :new) %></span>

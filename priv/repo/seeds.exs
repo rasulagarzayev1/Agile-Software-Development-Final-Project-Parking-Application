@@ -13,8 +13,8 @@
 
 alias Agileparking.{Repo, Accounts.User, Sales.Zone}
 
-[%{name: "Fred Flintstone", email: "fred@gmail.com", password: "parool", license_number: "123456789", balance: "12.43"},
- %{name: "Barney Rubble", email: "barney@gmail.com", password: "parool", license_number: "12345678a", balance: "0"}]
+[%{name: "Fred Flintstone", email: "fred@gmail.com", password: "parool", license_number: "123456789", balance: "12.43",monthly_bill: "0"},
+ %{name: "Barney Rubble", email: "barney@gmail.com", password: "parool", license_number: "12345678a", balance: "0",monthly_bill: "0"}]
 |> Enum.map(fn user_data -> User.changeset(%User{}, user_data) end)
 |> Enum.each(fn changeset -> Repo.insert!(changeset) end)
 

@@ -41,14 +41,36 @@ defmodule AgileparkingWeb.BookingController do
       conn
       |>put_flash(:error, "End date should be greater than start date")
       |> redirect(to: Routes.booking_path(conn, :index))
-    end
-
+    else
     Repo.get_by(Booking,id: id)
      |>Ecto.Changeset.change(%{end_date: booking_params["end_date"],totalPrice: Float.to_string(total) })
     |>Repo.update()
-
+    end
     conn
     |> put_flash(:info, "Succesfully updated")
+    |>redirect(to: Routes.booking_path(conn,:index))
+
+  end
+
+  def paylater(conn, %{"id"=>id}) do
+    user = Agileparking.Authentication.load_current_user(conn)
+     booking=Repo.get_by(Booking,id: id)
+     {monthly_bill,_}=Float.parse(user.monthly_bill)
+     {totalPrice,_}=Float.parse(booking.totalPrice)
+     Repo.get_by(User,id: user.id)
+     |>Ecto.Changeset.change(%{monthly_bill: Float.to_string(sum(monthly_bill,totalPrice))})
+     |>Repo.update()
+
+     Repo.get_by(Booking,id: booking.id)
+     |> Ecto.Changeset.change(%{payment_status: "Done", parkingStatus: "Finished"})
+     |>Repo.update()
+
+     Repo.get_by(Zone,id: booking.zoneId)
+     |> Ecto.Changeset.change(%{available: true})
+     |>Repo.update()
+
+    conn
+    |>put_flash(:info, "Added to the monhtly payment")
     |>redirect(to: Routes.booking_path(conn,:index))
 
   end

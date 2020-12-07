@@ -26,6 +26,7 @@ defmodule AgileparkingWeb.Router do
   scope "/", AgileparkingWeb do
     pipe_through [:browser]
     resources "/sessions", SessionController, only: [:new, :create, :delete]
+    get "/users/paynow/:id", UserController, :paynow
     resources "/users", UserController, only: [:new, :create]
   end
 
@@ -42,7 +43,9 @@ defmodule AgileparkingWeb.Router do
   end
   scope "/", AgileparkingWeb do
     pipe_through [:browser, :browser_auth, :ensure_auth]
+
     resources "/bookings", BookingController
+    get "/bookings/paylater/:id", BookingController, :paylater
     resources "/users", UserController
   end
 
