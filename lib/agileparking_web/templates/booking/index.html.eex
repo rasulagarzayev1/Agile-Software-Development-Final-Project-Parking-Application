@@ -31,8 +31,9 @@
         <span class="showBookings"><%= link "Show", to: Routes.booking_path(@conn, :show, booking) %></span>
          <%= if booking.payment_status != "Done" do %>
         <span id = "extend"><%= link "Extend", to: Routes.booking_path(@conn, :edit, booking) %></span>
-        <%= end%>
-        <span class="finishhh"><%= link "Finish", to: Routes.booking_path(@conn, :delete, booking), method: :delete, data: [confirm: "Are you sure?"] %></span>
+        <%= end%
+        <span id = "finish"><%= link "Finish", to: Routes.booking_path(@conn, :delete, booking), method: :delete, data: [confirm: "Are you sure?"] %></span>
+
       </td>
       <%end%>
     </tr>
@@ -44,7 +45,7 @@
   color:#ff9c22!important;
   display:inline-block;
 }
-.finishhh a{
+.finish a{
   color:red!important;
   display:inline-block;
 }

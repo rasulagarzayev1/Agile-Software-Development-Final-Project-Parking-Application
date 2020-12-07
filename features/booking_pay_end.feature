@@ -1,9 +1,9 @@
-Feature: Extend parking period
+Feature: Booking pay at the end of the parking period
   As a logged user
   Such that Im logged in and I introduce my destination
   I want to book with hourly or real time payment
 
-Scenario: Extend parking period
+Scenario: Booking pay at the end of the parking period
     Given I am logged in into the system
     And I am on the zones pages
     And I fill in the destination form with "Puiestee 112"
@@ -14,11 +14,8 @@ Scenario: Extend parking period
     And I click add button and go zones edit page
     And I am on the zones edit page
     And I click the payment type
-    And I select hourly payment type
-    And I fill start and end date with "13:00" and "15:20"
+    And I select real payment type
+    And I fill start and end date with "13:00" and "13:35"
     And I press submit2
-    And I am on the bookings page
-    And I click extend button
-    And I fill end date with "16:30"
-    And I press submit2
-    Then I should recieve success message1
+    And I click finish button
+    Then I should recieve success message2

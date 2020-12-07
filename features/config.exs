@@ -23,13 +23,29 @@ defmodule WhiteBreadConfig do
 
 #   suite name:          "Add card",
 #         context:       AddCardContext,
-#         feature_paths: ["features/user_adding_card.feature"]
+# #         feature_paths: ["features/user_adding_card.feature"]
 
-   suite name:          "Booking context",
-         context:       BookingContext,
-          feature_paths: ["features/booking.feature"]
+#    suite name:          "Booking context",
+#          context:       BookingContext,
+#           feature_paths: ["features/booking_select_hourly_real_time.feature"]
 
-  suite name:          "Extend Booking context",
-        context:       BookingContext,
-        feature_paths: ["features/extend_booking.feature"]
+#   suite name:          "Extend Booking context",
+#         context:       BookingContext,
+#         feature_paths: ["features/extend_booking.feature"]
+
+#   suite name:          "Submit a start and end of parking time ",
+#         context:       BookingContext,
+#         feature_paths: ["features/booking_submit_time.feature"]
+
+#   suite name:          "Pay before starting the parking period",
+#         context:       BookingContext,
+#         feature_paths: ["features/booking_pay_before.feature"]
+
+#    suite name:          "Pay after extending the parking period",
+#          context:       BookingContext,
+#          feature_paths: ["features/booking_pay_after_extending.feature"]
+
+    suite name:          "Booking pay at the end of the parking period",
+           context:       BookingContext,
+           feature_paths: ["features/booking_pay_end.feature"]
 end
