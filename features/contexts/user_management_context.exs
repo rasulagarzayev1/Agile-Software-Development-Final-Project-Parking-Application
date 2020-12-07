@@ -1,8 +1,7 @@
 defmodule UserManagementContext do
   use WhiteBread.Context
   use Hound.Helpers
-  alias Agileparking.{Repo, Accounts.User, Sales.Zone}
-
+  alias Agileparking.{Repo, Accounts.User}
 
   feature_starting_state fn  ->
     Application.ensure_all_started(:hound)
@@ -14,7 +13,7 @@ defmodule UserManagementContext do
     Ecto.Adapters.SQL.Sandbox.mode(Agileparking.Repo, {:shared, self()})
 
     # Register and login new user for BDD tests
-    [%{name: "sergi", email: "sergimartinez@gmail.cat", license_number: "123456789", password: "123456", balance: "12"}]
+    [%{name: "sergi", email: "sergimartinez17@gmail.cat", license_number: "123456789", password: "123456", balance: "12"}]
     |> Enum.map(fn user_data -> User.changeset(%User{}, user_data) end)
     |> Enum.each(fn changeset -> Repo.insert!(changeset) end)
   end
@@ -36,9 +35,24 @@ defmodule UserManagementContext do
   end
 
   and_ ~r/^I fill in the account information$/, fn state ->
-    fill_field({:id, "session_email"}, state[:email])
-    fill_field({:id, "session_password"}, state[:password])
+    fill_field({:id, "session_email"}, "sergimartinez17@gmail.cat")
+        fill_field({:id, "session_password"}, "123456")
     :timer.sleep(1000)
+    {:ok, state}
+  end
+
+  and_ ~r/^I fill in the account information with incorrect data$/, fn state ->
+    fill_field({:id, "session_email"}, "sergimartinez1@gmail.cat")
+        fill_field({:id, "session_password"}, "123456")
+    :timer.sleep(1000)
+    {:ok, state}
+  end
+
+  given_ ~r/^I have the incorrect credentials to login$/, fn state ->
+    {:ok, state}
+  end
+
+  given_ ~r/^I have the correct credentials to login$/, fn state ->
     {:ok, state}
   end
 
@@ -50,7 +64,7 @@ defmodule UserManagementContext do
   end
 
   then_ ~r/^I should receive a confirmation message$/, fn state ->
-    assert visible_in_page? ~r/Welcome fred@gmail.com/
+    assert visible_in_page? ~r/Welcome sergimartinez17@gmail.cat/
     {:ok, state}
   end
 
