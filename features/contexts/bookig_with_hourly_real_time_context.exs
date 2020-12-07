@@ -60,18 +60,13 @@ defmodule BookigWithHourlyRealTimeContext do
   end
 
   and_ ~r/^I should receive a table with all the available spaces and their respective distances$/, fn state ->
-    # assert visible_in_page? ~r/name/
-    #   assert visible_in_page? ~r/Hourly price/
-    #   assert visible_in_page? ~r/Real Time price/
-    #   assert visible_in_page? ~r/Distance/
-    #   assert (find_all_elements(:id, "zones-table") |> Enum.count) > 0
+    assert visible_in_page? ~r/name/
+      assert visible_in_page? ~r/Hourly price/
+      assert visible_in_page? ~r/Real Time price/
+      assert visible_in_page? ~r/Distance/
+      assert (find_all_elements(:id, "zones-table") |> Enum.count) > 0
     {:ok, state}
-  end
-
-  and_ ~r/^I click Book button and go show booking page$/, fn state ->
-    click({:id, "goShowDetail"})
-    {:ok, state}
-  # end
+  
 
 
 
