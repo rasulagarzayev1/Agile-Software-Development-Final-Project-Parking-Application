@@ -2,7 +2,7 @@
 
 <%= form_tag("/zones", method: :post) %>
   Address
-  <input name="name" type="text" id="name"/>
+  <input name="name" type="text" id="name" required/>
   Time (optional)
   <input name="time" type="text" id="time" placeholder="HH:MM"/>
   <p id="demo"></p>
@@ -18,9 +18,9 @@
 <table class="table">
   <thead>
     <tr>
-      <th>name</th>
-      <th>Hourly rate</th>
-      <th>Real Time rate</th>
+      <th>Name</th>
+      <th>Hourly rate (EUR)</th>
+      <th>Real Time rate (cents)</th>
       <th>Distance</th>
       <th>Book</th>
     </tr>
@@ -38,6 +38,7 @@
     </tr>
   </tbody>
   <% end %>
+
 </table>
 <% end %>
 
@@ -46,30 +47,32 @@
 <table class="table">
   <thead>
     <tr>
-      <th>name</th>
+      <th>Name</th>
       <th>Hourly rate</th>
       <th>Real Time rate</th>
       <th>Distance</th>
-      <th>Hourly price</th>
-      <th>Real time price</th>
+      <th>Hourly price (EUR)</th>
+      <th>Real time price (EUR)</th>
       <th>Book</th>
     </tr>
   </thead>
   <tbody id="zones-table">
     <%= for zone <- @zones do %>
+
     <tr>
       <td><%= elem(zone,0).name %></td>
       <td><%= elem(zone,0).hourlyPrice %></td>
       <td><%= elem(zone,0).realTimePrice %></td>
-      <td><%= elem(zone,1) %></td>
-      <td><%= elem(zone,3) %></td>
+      <td><%= elem(zone,2) %></td>
       <td><%= elem(zone,4) %></td>
+      <td><%= elem(zone,3) %></td>
       <td>
         <%= link "Book", to: Routes.zone_path(@conn, :show, elem(zone,0).id)%>
       </td>
     </tr>
   </tbody>
-  <% end %>
+    <% end %>
+
 </table>
 <% end %>
 
