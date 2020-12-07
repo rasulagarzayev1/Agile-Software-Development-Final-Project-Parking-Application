@@ -112,7 +112,7 @@ defmodule AgileparkingWeb.BookingControllerTest do
 
   # Requirements 3.1
   test "Check database", %{conn: conn} do
-    Repo.insert!(%Zone{id: 1, name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true})
+    Repo.insert!(%Zone{id: 1, name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "A"})
     # ADD BOOKING
     conn = put conn, "/zones/1", %{id: 1, zone: [id: 1, end_date: "14:00", hourlyPrice: "2", pay_now: "true", payment_type: "Hourly", realTimePrice: "16", start_date: "12:00", total_payment: "2"]}
     conn = get conn, redirected_to(conn)
@@ -120,12 +120,12 @@ defmodule AgileparkingWeb.BookingControllerTest do
     booking =  Repo.get!(Booking, 1)
     payment = booking.paymentType
     # CHECKING DATABASE BY CHECKING BOOKING IN BOOKINGS INDEX PAGE
-    assert html_response(conn, 200) =~ ~r/Hourly/
+    assert html_response(conn, 200) =~ "#{payment}"
   end
 
   # Requirements 3.2
   test "Invalid times/dates ", %{conn: conn} do
-    Repo.insert!(%Zone{id: 1, name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true})
+    Repo.insert!(%Zone{id: 1, name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "A"})
     # END IS BEFORE THE START TIME
     conn = put conn, "/zones/1", %{id: 1, zone: [end_date: "10:00", hourlyPrice: "2", pay_now: "true", payment_type: "Hourly", realTimePrice: "16", start_date: "12:00", total_payment: "2"]}
     conn = get conn, redirected_to(conn)
@@ -134,7 +134,7 @@ defmodule AgileparkingWeb.BookingControllerTest do
 
   # Requirements 3.3
   test "Blocks the corresponding parking space", %{conn: conn} do
-    Repo.insert!(%Zone{id: 1, name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true})
+    Repo.insert!(%Zone{id: 1, name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "A"})
     # FIRST BOOKING IS ADDED AND SLOT AVAILABILITY UPDATED
     conn = put conn, "/zones/1", %{id: 1, zone: [end_date: "13:00", hourlyPrice: "2", pay_now: "true", payment_type: "Hourly", realTimePrice: "16", start_date: "12:00", total_payment: "2"]}
     conn = get conn, redirected_to(conn)

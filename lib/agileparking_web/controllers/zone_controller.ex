@@ -91,7 +91,7 @@ defmodule AgileparkingWeb.ZoneController do
                 render(conn, "index.html", zones: zones, type: 1)
             end
         end
-    end                   
+    end
 
       def edit(conn, %{"id" => id}) do
         zone = Repo.get!(Zone, id)
