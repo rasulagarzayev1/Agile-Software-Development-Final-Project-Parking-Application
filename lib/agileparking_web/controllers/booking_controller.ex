@@ -37,6 +37,12 @@ defmodule AgileparkingWeb.BookingController do
 
     total=totalPriceHourly(booking.start_date,booking_params["end_date"],zones.hourlyPrice)
 
+    if totalTime(booking.start_date,booking_params["end_date"])<0 do
+      conn
+      |>put_flash(:error, "End date should be greater than start date")
+      |> redirect(to: Routes.booking_path(conn, :index))
+    end
+
     Repo.get_by(Booking,id: id)
      |>Ecto.Changeset.change(%{end_date: booking_params["end_date"],totalPrice: Float.to_string(total) })
     |>Repo.update()

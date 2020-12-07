@@ -19,7 +19,7 @@ defmodule WhiteBreadConfig do
 
     suite name:          "Search parking with time",
           context:       SearchParkingContext,
-          feature_paths: ["features/zone_search_with_time.feature"]      
+          feature_paths: ["features/zone_search_with_time.feature"]
 
 #   suite name:          "Add balance",
 #         context:       AddBalanceContext,
