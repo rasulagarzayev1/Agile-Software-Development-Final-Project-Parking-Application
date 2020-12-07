@@ -48,8 +48,6 @@ defmodule AgileparkingWeb.ZoneController do
 
 
     def distance(placeA, placeB) do
-        pointA = Agileparking.Geolocation.find_location(placeA)
-        pointB = Agileparking.Geolocation.find_location(placeB)
         distance = Agileparking.Geolocation.distance(placeA, placeB)
         Enum.at(distance,0)
     end
