@@ -2,6 +2,7 @@ defmodule UserManagementContext do
   use WhiteBread.Context
   use Hound.Helpers
   alias Agileparking.{Repo, Accounts.User}
+
   feature_starting_state fn  ->
     Application.ensure_all_started(:hound)
     %{}
@@ -109,4 +110,24 @@ defmodule UserManagementContext do
       assert visible_in_page? ~r/Oops, something went wrong! Please check the errors below./
       {:ok, state}
     end
+
+    given_ ~r/^I am logged in into the system$/, fn state ->
+      navigate_to "/sessions/new"
+      fill_field({:id, "session_email"}, "sergimartinez@gmail.cat")
+      fill_field({:id, "session_password"}, "123456")
+      click({:id, "submit_button"})
+      :timer.sleep(1000)
+      {:ok, state}
+    end
+
+    when_ ~r/^I press logout$/, fn state ->
+      click({:id, "logout_button"})
+      {:ok, state}
+    end
+
+    then_ ~r/^I should receive a logout confirmation message$/, fn state ->
+      assert visible_in_page? ~r/Welcome to Agileparking!/
+      {:ok, state}
+    end
+    
 end

@@ -13,6 +13,10 @@ defmodule Agileparking.Geolocation do
     end
 
     def distance(origin, destination) do
+
+      if (origin == destination) do
+        [0,0]
+      else
         [o1, o2] = find_location(origin)
         [d1, d2] = find_location(destination)
 
@@ -21,6 +25,7 @@ defmodule Agileparking.Geolocation do
         matches = Regex.named_captures(~r/travelD\D+(?<dist>\d+.\d+)\D+(?<dur>\d+.\d+)/,response.body)
         [{v1, _}, {v2, _}] = [matches["dist"] |> Float.parse, matches["dur"] |> Float.parse]
         [v1, v2]
+      end
      end
   
     defp get_key(), do: "Agof7gqeVXWN_rs-yvCpvPNY3p5RKZPpxbOaf5P-1uGOqBURE_9oGHXKohAyVKbY"
