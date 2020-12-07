@@ -27,11 +27,11 @@ defmodule AgileparkingWeb.ZonesControllerTest do
     {:ok, conn: conn}
   end
 
-  
+
   test "Only shows available", %{conn: conn} do
     Repo.insert!(%Zone{name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "B"})
     Repo.insert!(%Zone{name: "Puiestee 114", hourlyPrice: 2, realTimePrice: 16, available: false, zone: "B"})
-    conn = 
+    conn =
       post conn, "/zones", %{
         name: "Puiestee 110",
         time: "17:00"
@@ -43,7 +43,7 @@ defmodule AgileparkingWeb.ZonesControllerTest do
   test "Only shows available among radius", %{conn: conn} do
     Repo.insert!(%Zone{name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "B"})
     Repo.insert!(%Zone{name: "Puiestee 114", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "B"})
-    conn = 
+    conn =
     post conn, "/zones", %{
       name: "Jordi Girgona 45, Barcelona",
       time: "17:00"
@@ -54,7 +54,7 @@ defmodule AgileparkingWeb.ZonesControllerTest do
 
   test "Zone A price shows correctly", %{conn: conn} do
     Repo.insert!(%Zone{name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "A"})
-    conn = 
+    conn =
     post conn, "/zones", %{
       name: "Puiestee 110",
     }
@@ -65,7 +65,7 @@ defmodule AgileparkingWeb.ZonesControllerTest do
 
   test "Zone B price shows correctly", %{conn: conn} do
     Repo.insert!(%Zone{name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "B"})
-    conn = 
+    conn =
     post conn, "/zones", %{
       name: "Puiestee 110",
     }
@@ -73,8 +73,8 @@ defmodule AgileparkingWeb.ZonesControllerTest do
     assert html_response(conn, 200) =~ "2"
     assert html_response(conn, 200) =~ "16"
   end
-  
-  
+
+
   test "Hourly price calculated correctly", %{conn: conn} do
     Repo.insert!(%Zone{name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "B"})
     now = Time.utc_now()
@@ -84,7 +84,7 @@ defmodule AgileparkingWeb.ZonesControllerTest do
     time = "#{time}:#{milis}"
     time = elem(Time.from_iso8601(time),1)
     price = 2*(time.hour - now.hour)
-    conn = 
+    conn =
     post conn, "/zones", %{
       name: "Puiestee 110",
       time: "23:50"
@@ -101,7 +101,7 @@ defmodule AgileparkingWeb.ZonesControllerTest do
     time = "#{time}:#{milis}"
     time = elem(Time.from_iso8601(time),1)
     price = Float.round(((16*((time.minute + time.hour*60) - (now.minute + now.hour*60)))/100/5),2)
-    conn = 
+    conn =
     post conn, "/zones", %{
       name: "Puiestee 110",
       time: "23:50"

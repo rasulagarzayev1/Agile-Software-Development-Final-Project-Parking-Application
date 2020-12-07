@@ -22,7 +22,7 @@ defmodule SearchParkingContext do
 
       # Create parking spots
 
-      [%{name: "Puiestee 114", hourlyPrice: 2, realTimePrice: 16, available: true}]
+      [%{name: "Puiestee 114", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "B"}]
       |> Enum.map(fn zone_data -> Zone.changeset(%Zone{}, zone_data) end)
       |> Enum.each(fn changeset -> Repo.insert!(changeset) end)
       end
@@ -78,7 +78,7 @@ defmodule SearchParkingContext do
       {:ok, state}
     end
 
-    then_ ~r/^I should receive a table with all the available spaces and their respective distances and prices$/, fn state -> 
+    then_ ~r/^I should receive a table with all the available spaces and their respective distances and prices$/, fn state ->
       assert visible_in_page? ~r/Name/
       assert visible_in_page? ~r/Hourly rate/
       assert visible_in_page? ~r/Real Time rate/
