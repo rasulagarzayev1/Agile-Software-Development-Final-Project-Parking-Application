@@ -4,15 +4,15 @@ Feature: User login
   I want to log in
 
 Scenario: login with valid credentials
-  Given I have the following email "fred@gmail.com" and password "parool"
+  Given I have the correct credentials to login
   And I am on the login page
   And I fill in the account information
   When I press "Login"
   Then I should receive a confirmation message
 
 Scenario: login with invalid credentials
-  Given I have the following email "sergimartinez@gmail.cat" and password "123456"
+  Given I have the correct credentials to login
   And I am on the login page
-  And I fill in the account information
+  And I fill in the account information with incorrect data
   When I press "Login"
 	Then I should receive a rejection message  
