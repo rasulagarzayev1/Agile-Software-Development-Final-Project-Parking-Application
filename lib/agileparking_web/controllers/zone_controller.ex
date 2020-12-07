@@ -7,6 +7,20 @@ defmodule AgileparkingWeb.ZoneController do
     alias Agileparking.Bookings.Booking
     alias Agileparking.Forms.Zoneform
     alias Ecto.{Changeset, Multi}
+
+
+    def compute_hourly(time, price) do
+      now = Time.utc_now()
+      now = Time.add(now, 7200, :second)
+      price*(time.hour - now.hour)
+    end
+
+    def compute_real_time(time, price) do
+      now = Time.utc_now()
+      now = Time.add(now, 7200, :second)
+      Float.round(((price*((time.minute + time.hour*60) - (now.minute + now.hour*60)))/100/5),2)
+    end
+
     def is_time(time) do
         case Time.from_iso8601(time) do
           {:ok, t} -> true
@@ -41,40 +55,43 @@ defmodule AgileparkingWeb.ZoneController do
         render(conn, "index.html", type: 3)
     end
 
+    def filtering(list, address) do
+      list
+      |> Enum.filter(fn tuple -> distance(tuple.name, address ) < 500  end)
+    end
+
     def create(conn, params) do
         type = 0
-        zones = Repo.all(Zone)
         address = params["name"]
         time = params["time"]
+        query = from t in Zone, where: t.available == true, select: t
+        zones = Repo.all(query)
+        zones = zones |> filtering(address)
         milis = "00"
         time = "#{time}:#{milis}"
         now = Time.utc_now()
         now = Time.add(now, 7200, :second)
         p =  Agileparking.Geolocation.find_location(address)
-        if Enum.at(p,0) == -1 do
-            zones = Enum.map(zones, fn zone  -> {zone, -1,2, 0, 0} end)
+        if ((Enum.at(p,0) == -1) or (Enum.count(zones) == 0)) do
+            zones = Enum.map(zones, fn zone  -> {zone, -1,0, 0, 0} end)
             render(conn, "index.html", zones: zones,type: 0)
-        end
-
-        if is_time(time) do
-            tt = get_time(time)
-            if (tt.minute + tt.hour*60) <= (now.minute + now.hour*60) do
+        else
+            if is_time(time) do
+                tt = get_time(time)
+                if (tt.minute + tt.hour*60) <= (now.minute + now.hour*60) do
+                    zones = Enum.map(zones, fn zone  -> {zone, distance(params["name"], zone.name),0,0, 0} end)
+                    render(conn, "index.html", zones: zones, type: 1)
+                else
+                    zones = Enum.map(zones, fn zone  -> {zone, distance(params["name"], zone.name),0,compute_real_time(tt, zone.realTimePrice), compute_hourly(tt, zone.hourlyPrice)} end)
+                    render(conn, "index.html", zones: zones, type: 2)
+                end
+            else
+                p =  Agileparking.Geolocation.find_location(address)
                 zones = Enum.map(zones, fn zone  -> {zone, distance(params["name"], zone.name),0,0, 0} end)
                 render(conn, "index.html", zones: zones, type: 1)
-            else
-                zones = Enum.map(zones, fn zone  -> {zone, distance(params["name"], zone.name),0,((zone.realTimePrice*((tt.minute + tt.hour*60) - (now.minute + now.hour*60)))/100), zone.hourlyPrice*tt.hour - now.hour} end)
-                render(conn, "index.html", zones: zones, type: 2)
             end
-        else
-            p =  Agileparking.Geolocation.find_location(address)
-            IO.puts "CAIC AQUI FIJO JODER"
-            zones = Enum.map(zones, fn zone  -> {zone, distance(params["name"], zone.name),0,0, 0} end)
-            render(conn, "index.html", zones: zones, type: 1)
         end
-    end
-
-
-
+    end                   
 
       def edit(conn, %{"id" => id}) do
         zone = Repo.get!(Zone, id)
