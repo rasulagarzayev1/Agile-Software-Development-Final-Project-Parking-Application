@@ -1,6 +1,8 @@
 defmodule UserManagementContext do
   use WhiteBread.Context
   use Hound.Helpers
+  alias Agileparking.{Repo, Accounts.User, Sales.Zone}
+
 
   feature_starting_state fn  ->
     Application.ensure_all_started(:hound)
@@ -10,7 +12,11 @@ defmodule UserManagementContext do
     Hound.start_session
     Ecto.Adapters.SQL.Sandbox.checkout(Agileparking.Repo)
     Ecto.Adapters.SQL.Sandbox.mode(Agileparking.Repo, {:shared, self()})
-    %{}
+
+    # Register and login new user for BDD tests
+    [%{name: "sergi", email: "sergimartinez@gmail.cat", license_number: "123456789", password: "123456", balance: "12"}]
+    |> Enum.map(fn user_data -> User.changeset(%User{}, user_data) end)
+    |> Enum.each(fn changeset -> Repo.insert!(changeset) end)
   end
   scenario_finalize fn _status, _state ->
     Ecto.Adapters.SQL.Sandbox.checkin(Agileparking.Repo)
@@ -90,4 +96,24 @@ defmodule UserManagementContext do
       assert visible_in_page? ~r/Oops, something went wrong! Please check the errors below./
       {:ok, state}
     end
+
+    given_ ~r/^I am logged in into the system$/, fn state ->
+      navigate_to "/sessions/new"
+      fill_field({:id, "session_email"}, "sergimartinez@gmail.cat")
+      fill_field({:id, "session_password"}, "123456")
+      click({:id, "submit_button"})
+      :timer.sleep(1000)
+      {:ok, state}
+    end
+
+    when_ ~r/^I press logout$/, fn state ->
+      click({:id, "logout_button"})
+      {:ok, state}
+    end
+
+    then_ ~r/^I should receive a logout confirmation message$/, fn state ->
+      assert visible_in_page? ~r/Welcome to Agileparking!/
+      {:ok, state}
+    end
+    
 end

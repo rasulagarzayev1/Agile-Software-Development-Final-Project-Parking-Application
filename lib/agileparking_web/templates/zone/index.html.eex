@@ -1,4 +1,4 @@
-<h2>Listing parking loots</h2>
+<h2>Listing parking lots</h2>
 
 <%= form_tag("/zones", method: :post) %>
   Address
@@ -19,7 +19,6 @@
   <thead>
     <tr>
       <th>Name</th>
-      <th>Type</th>
       <th>Hourly rate (EUR)</th>
       <th>Real Time rate (cents)</th>
       <th>Distance</th>
@@ -30,7 +29,6 @@
     <%= for zone <- @zones do %>
     <tr>
       <td><%= elem(zone,0).name %></td>
-      <td><%= elem(zone,0).zone %></td>
       <td><%= elem(zone,0).hourlyPrice %></td>
       <td><%= elem(zone,0).realTimePrice %></td>
       <td><%= elem(zone,1) %></td>
@@ -65,7 +63,6 @@
 
     <tr>
       <td><%= elem(zone,0).name %></td>
-      <td><%= elem(zone,0).zone %></td>
       <td><%= elem(zone,0).hourlyPrice %></td>
       <td><%= elem(zone,0).realTimePrice %></td>
       <td><%= elem(zone,2) %></td>
