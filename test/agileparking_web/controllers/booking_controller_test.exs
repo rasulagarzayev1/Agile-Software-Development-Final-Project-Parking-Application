@@ -86,3 +86,62 @@
 #     %{booking: booking}
 #   end
 # end
+
+defmodule AgileparkingWeb.BookingControllerTest do
+  use AgileparkingWeb.ConnCase
+
+  alias Agileparking.{Repo, Sales.Zone}
+  alias Agileparking.Guardian
+  alias Agileparking.Accounts.User
+  alias Agileparking.Bookings.Booking
+  import Ecto.Query, only: [from: 2]
+
+  @create_attrs %{name: "sergi", email: "sergi@gmail.com", license_number: "1234567889", password: "12345678", balance: "12.43"}
+
+  setup do
+    user = Repo.insert!(%User{name: "sergi", email: "sergi@gmail.com", license_number: "1234567889", password: "12345678", balance: "12.43"})
+    conn = build_conn()
+           |> bypass_through(Agileparking.Router, [:browser, :browser_auth, :ensure_auth])
+           |> get("/")
+           |> Map.update!(:state, fn (_) -> :set end)
+           |> Guardian.Plug.sign_in(user)
+           |> send_resp(200, "Flush the session")
+           |> recycle
+    {:ok, conn: conn}
+  end
+
+  # Requirements 3.1
+  test "Check database", %{conn: conn} do
+    Repo.insert!(%Zone{id: 1, name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "A"})
+    # ADD BOOKING
+    conn = put conn, "/zones/1", %{id: 1, zone: [id: 1, end_date: "14:00", hourlyPrice: "2", pay_now: "true", payment_type: "Hourly", realTimePrice: "16", start_date: "12:00", total_payment: "2"]}
+    conn = get conn, redirected_to(conn)
+    # CHECKING DATABASE BY CHECKING BOOKING
+    booking =  Repo.get!(Booking, 1)
+    payment = booking.paymentType
+    # CHECKING DATABASE BY CHECKING BOOKING IN BOOKINGS INDEX PAGE
+    assert html_response(conn, 200) =~ "#{payment}"
+  end
+
+  # Requirements 3.2
+  test "Invalid times/dates ", %{conn: conn} do
+    Repo.insert!(%Zone{id: 1, name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "A"})
+    # END IS BEFORE THE START TIME
+    conn = put conn, "/zones/1", %{id: 1, zone: [end_date: "10:00", hourlyPrice: "2", pay_now: "true", payment_type: "Hourly", realTimePrice: "16", start_date: "12:00", total_payment: "2"]}
+    conn = get conn, redirected_to(conn)
+    assert html_response(conn, 200) =~ ~r/The start always should occur before the end time/
+  end
+
+  # Requirements 3.3
+  test "Blocks the corresponding parking space", %{conn: conn} do
+    Repo.insert!(%Zone{id: 1, name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "A"})
+    # FIRST BOOKING IS ADDED AND SLOT AVAILABILITY UPDATED
+    conn = put conn, "/zones/1", %{id: 1, zone: [end_date: "13:00", hourlyPrice: "2", pay_now: "true", payment_type: "Hourly", realTimePrice: "16", start_date: "12:00", total_payment: "2"]}
+    conn = get conn, redirected_to(conn)
+
+    # SECOND BOOKING IS TRIED TO ADD BUT UNSUCCESSFUL BECAUSE THE SLOT IS NOT AVAILABLE
+    conn = put conn, "/zones/1", %{id: 1, zone: [end_date: "13:00", hourlyPrice: "2", pay_now: "true", payment_type: "Hourly", realTimePrice: "16", start_date: "12:00", total_payment: "2"]}
+    conn = get conn, redirected_to(conn)
+    assert html_response(conn, 200) =~ ~r/There is no an available slot. Please choose new parking area/
+  end
+end

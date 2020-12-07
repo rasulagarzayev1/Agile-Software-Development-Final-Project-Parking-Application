@@ -7,13 +7,14 @@ defmodule Agileparking.Sales.Zone do
     field :hourlyPrice, :integer
     field :realTimePrice, :integer
     field :available, :boolean
+    field :zone, :string
     timestamps()
   end
 
   @doc false
-  def changeset(struct, params \\ %{})  do
+  def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:name, :hourlyPrice, :realTimePrice, :available])
-    |> validate_required([:name, :hourlyPrice, :realTimePrice, :available])
+    |> cast(params, [:name, :hourlyPrice, :realTimePrice, :available, :zone])
+    |> validate_required([:name, :hourlyPrice, :realTimePrice, :available, :zone])
   end
 end

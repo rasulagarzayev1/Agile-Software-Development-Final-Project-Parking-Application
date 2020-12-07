@@ -83,11 +83,13 @@ defmodule AddBalanceContext do
       fill_field({:id, "card_month"}, "12")
       fill_field({:id, "card_year"}, "2020")
       fill_field({:id, "card_cvc"}, "123")
+      :timer.sleep(1000)
       {:ok, state}
     end
 
     when_ ~r/^I press submit1$/, fn state ->
       click({:id, "submit1"})
+      :timer.sleep(1000)
       {:ok, state}
     end
 

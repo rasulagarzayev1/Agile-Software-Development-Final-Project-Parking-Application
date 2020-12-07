@@ -6,6 +6,13 @@ Feature: Get available zones
 Scenario: enter correct destination
     Given I am logged in into the system
     And I am on the zones pages
-    And I fill in the form with "Tahtvere 48"
+    And I fill in the form with "Puiestee 112"
     And I press submit
     Then I should receive a table with all the available spaces and their respective distances
+
+Scenario: enter incorrect destination
+    Given I am logged in into the system
+    And I am on the zones pages
+    And I fill in the form with "............."
+    And I press submit
+    Then I should receive a zone invalid message

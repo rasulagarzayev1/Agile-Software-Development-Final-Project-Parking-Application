@@ -1,3 +1,3 @@
-defmodule AgileparkingWeb.PageViewTest do
-  use AgileparkingWeb.ConnCase, async: true
-end
+# defmodule AgileparkingWeb.PageViewTest do
+#   use AgileparkingWeb.ConnCase, async: true
+# end
