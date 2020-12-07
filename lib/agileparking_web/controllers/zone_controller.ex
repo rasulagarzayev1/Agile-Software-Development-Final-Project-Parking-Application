@@ -12,7 +12,11 @@ defmodule AgileparkingWeb.ZoneController do
     def compute_hourly(time, price) do
       now = Time.utc_now()
       now = Time.add(now, 7200, :second)
-      price*(time.hour - now.hour)
+      if (time.hour - now.hour) == 0 do
+        price*1
+      else         
+        price*(time.hour - now.hour)
+      end
     end
 
     def compute_real_time(time, price) do
@@ -66,30 +70,37 @@ defmodule AgileparkingWeb.ZoneController do
         time = params["time"]
         query = from t in Zone, where: t.available == true, select: t
         zones = Repo.all(query)
-        zones = zones |> filtering(address)
-        milis = "00"
-        time = "#{time}:#{milis}"
-        now = Time.utc_now()
-        now = Time.add(now, 7200, :second)
         p =  Agileparking.Geolocation.find_location(address)
-        if ((Enum.at(p,0) == -1) or (Enum.count(zones) == 0)) do
-            zones = Enum.map(zones, fn zone  -> {zone, -1,0, 0, 0} end)
-            render(conn, "index.html", zones: zones,type: 0)
+
+        if ((Enum.at(p,0) == -1)) do
+          zones = Enum.map(zones, fn zone  -> {zone, -1,0, 0, 0} end)
+          render(conn, "index.html", zones: zones,type: 0)
         else
-            if is_time(time) do
-                tt = get_time(time)
-                if (tt.minute + tt.hour*60) <= (now.minute + now.hour*60) do
-                    zones = Enum.map(zones, fn zone  -> {zone, distance(params["name"], zone.name),0,0, 0} end)
-                    render(conn, "index.html", zones: zones, type: 1)
-                else
-                    zones = Enum.map(zones, fn zone  -> {zone, distance(params["name"], zone.name),0,compute_real_time(tt, zone.realTimePrice), compute_hourly(tt, zone.hourlyPrice)} end)
-                    render(conn, "index.html", zones: zones, type: 2)
-                end
-            else
-                p =  Agileparking.Geolocation.find_location(address)
-                zones = Enum.map(zones, fn zone  -> {zone, distance(params["name"], zone.name),0,0, 0} end)
-                render(conn, "index.html", zones: zones, type: 1)
-            end
+          zones = zones |> filtering(address)
+          milis = "00"
+          time = "#{time}:#{milis}"
+          now = Time.utc_now()
+          now = Time.add(now, 7200, :second)
+          p =  Agileparking.Geolocation.find_location(address)
+          if (Enum.count(zones) == 0) do
+              zones = Enum.map(zones, fn zone  -> {zone, -1,0, 0, 0} end)
+              render(conn, "index.html", zones: zones,type: 0)
+          else
+              if is_time(time) do
+                  tt = get_time(time)
+                  if (tt.minute + tt.hour*60) <= (now.minute + now.hour*60) do
+                      zones = Enum.map(zones, fn zone  -> {zone, distance(params["name"], zone.name),0,0, 0} end)
+                      render(conn, "index.html", zones: zones, type: 1)
+                  else
+                      zones = Enum.map(zones, fn zone  -> {zone, distance(params["name"], zone.name),0,compute_real_time(tt, zone.realTimePrice), compute_hourly(tt, zone.hourlyPrice)} end)
+                      render(conn, "index.html", zones: zones, type: 2)
+                  end
+              else
+                  p =  Agileparking.Geolocation.find_location(address)
+                  zones = Enum.map(zones, fn zone  -> {zone, distance(params["name"], zone.name),0,0, 0} end)
+                  render(conn, "index.html", zones: zones, type: 1)
+              end
+          end
         end
     end
 
