@@ -31,8 +31,8 @@
           </ol>
           <span class="logo"></span>
           </nav>
-          <a href="https://phoenixframework.org/" class="phx-logo">
-            <img src="<%= Routes.static_path(@conn, "/images/phoenix.png") %>" alt="Phoenix Framework Logo"/>
+          <a href="https://phoenixframework.org/" class="phx-logo center">
+            <img src="<%= Routes.static_path(@conn, "/images/agileparking.png") %>" alt="Phoenix Framework Logo"/>
           </a>
         </section>
       </header>

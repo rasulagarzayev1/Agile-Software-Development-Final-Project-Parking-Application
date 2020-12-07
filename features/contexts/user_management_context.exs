@@ -72,6 +72,7 @@ defmodule UserManagementContext do
     assert visible_in_page? ~r/Bad User Credentials/
     {:ok, state}
   end
+  #Given I have the name "sergi" email "fred@gmail.com" password "parool2334dd56" and license_number "12345678910"
 
   given_ ~r/^I have the name "(?<argument_one>[^"]+)" email "(?<argument_two>[^"]+)" password "(?<argument_three>[^"]+)" and license_number "(?<argument_four>[^"]+)"$/,
   fn state, %{argument_one: argument_one,argument_two: argument_two,argument_three: argument_three,argument_four: argument_four} ->
@@ -87,11 +88,11 @@ defmodule UserManagementContext do
      {:ok, state}
    end
 
-   and_ ~r/^I fill in the registration information$/, fn state ->
-    fill_field({:id, "user_name"}, state[:name])
-    fill_field({:id, "user_email"}, state[:email])
-    fill_field({:id, "user_license_number"}, state[:password])
-    fill_field({:id, "user_password"}, state[:license_number])
+   and_ ~r/^I fill in the registration information with correct data$/, fn state ->
+    fill_field({:id, "user_name"}, "sergi")
+    fill_field({:id, "user_email"}, "sergisergi@gmail.com")
+    fill_field({:id, "user_license_number"}, "123456789")
+    fill_field({:id, "user_password"}, "parool")
     {:ok, state}
    end
 
@@ -113,7 +114,7 @@ defmodule UserManagementContext do
 
     given_ ~r/^I am logged in into the system$/, fn state ->
       navigate_to "/sessions/new"
-      fill_field({:id, "session_email"}, "sergimartinez@gmail.cat")
+      fill_field({:id, "session_email"}, "sergimartinez17@gmail.cat")
       fill_field({:id, "session_password"}, "123456")
       click({:id, "submit_button"})
       :timer.sleep(1000)
@@ -127,6 +128,14 @@ defmodule UserManagementContext do
 
     then_ ~r/^I should receive a logout confirmation message$/, fn state ->
       assert visible_in_page? ~r/Welcome to Agileparking!/
+      {:ok, state}
+    end
+
+    and_ ~r/^I fill in the registration information with incorrect data$/, fn state ->
+      fill_field({:id, "user_name"}, "sergi")
+      fill_field({:id, "user_email"}, "sergisergi")
+      fill_field({:id, "user_license_number"}, "123456789")
+      fill_field({:id, "user_password"}, "parool")
       {:ok, state}
     end
     
