@@ -13,6 +13,7 @@ defmodule WhiteBreadConfig do
          context:       UserManagementContext,
          feature_paths: ["features/user_logout.feature"]
 
+
     suite name:          "Search parking",
           context:       SearchParkingContext,
           feature_paths: ["features/zone_search_parking.feature"]
@@ -21,6 +22,7 @@ defmodule WhiteBreadConfig do
           context:       SearchParkingContext,
           feature_paths: ["features/zone_search_with_time.feature"]      
 
+
 #   suite name:          "Add balance",
 #         context:       AddBalanceContext,
 #         feature_paths: ["features/user_adding_balance.feature"]
@@ -28,4 +30,8 @@ defmodule WhiteBreadConfig do
 #   suite name:          "Add card",
 #         context:       AddCardContext,
 #         feature_paths: ["features/user_adding_card.feature"]
+
+   suite name:          "Booking with hourly real time context",
+         context:       BookigWithHourlyRealTimeContext,
+          feature_paths: ["features/bookig_with_hourly_real_time_payment.feature"]
 end
