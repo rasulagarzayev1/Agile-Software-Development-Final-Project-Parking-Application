@@ -1,4 +1,4 @@
-defmodule BookigWithHourlyRealTimeContext do
+defmodule BookingContext do
   use WhiteBread.Context
   use Hound.Helpers
   alias Agileparking.{Repo, Accounts.User, Sales.Zone}
@@ -61,7 +61,7 @@ defmodule BookigWithHourlyRealTimeContext do
 
   and_ ~r/^I press submit1$/, fn state ->
     click({:id, "search"})
-    :timer.sleep(3000)
+    :timer.sleep(7000)
     {:ok, state}
   end
 
@@ -112,6 +112,7 @@ defmodule BookigWithHourlyRealTimeContext do
   fn state, %{argument_one: argument_one,argument_two: argument_two} ->\
     fill_field({:id, "zone_start_date"}, argument_one)
     fill_field({:id, "zone_end_date"}, argument_two)
+    :timer.sleep(1000)
     {:ok, state}
   end
 
@@ -127,10 +128,45 @@ defmodule BookigWithHourlyRealTimeContext do
     {:ok, state}
   end
 
+  and_ ~r/^I am on the bookings page$/, fn state ->
+    {:ok, state}
+  end
 
+  and_ ~r/^I click extend button$/, fn state ->
+    click({:id, "extend"})
+    :timer.sleep(1000)
+    {:ok, state}
+  end
 
+  and_ ~r/^I fill end date with "(?<argument_one>[^"]+)"$/,
+  fn state, %{argument_one: argument_one} ->
+    fill_field({:id, "booking_end_date"}, argument_one)
+    :timer.sleep(1000)
+    {:ok, state}
+  end
 
+  then_ ~r/^I should recieve success message1$/, fn state ->
+    assert visible_in_page? ~r/Succesfully updated/
+    :timer.sleep(1000)
+    {:ok, state}
+  end
 
+  and_ ~r/^I click checkbox$/, fn state ->
+    click({:id, "pay"})
+    :timer.sleep(1000)
+    {:ok, state}
+  end
 
+  and_ ~r/^I click finish button$/, fn state ->
+    click({:id, "finish"})
+    :timer.sleep(1000)
+    {:ok, state}
+  end
+
+  then_ ~r/^I should recieve success message2$/, fn state ->
+    assert visible_in_page? ~r/Booking finished succesfully/
+    :timer.sleep(1000)
+    {:ok, state}
+  end
 
 end

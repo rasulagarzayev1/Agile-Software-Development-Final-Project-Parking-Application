@@ -17,4 +17,12 @@
 </ul>
 
 <span id="add"><%= link "Book", to: Routes.zone_path(@conn, :edit, @zone) %></span>
-<span><%= link "Back", to: Routes.zone_path(@conn, :index) %></span>
+<span class="back"><%= link "Back", to: Routes.zone_path(@conn, :index) %></span>
+
+<style>
+.back a{
+  color:red!important;
+  display:inline-block;
+  padding-left:15px
+}
+</style>

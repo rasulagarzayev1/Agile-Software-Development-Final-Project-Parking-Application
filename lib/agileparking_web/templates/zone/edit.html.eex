@@ -34,13 +34,13 @@
 
 
 
-  <div class="form-group">
+  <div class="form-group" style="display:none">
     <%= label zone, :hourlyPrice, class: "control-label" %>
     <%= text_input  zone, :hourlyPrice, class: "form-control hourlyPrice" %>
     <%= error_tag zone, :hourlyPrice %>
   </div>
 
-  <div class="form-group">
+  <div class="form-group" style="display:none">
     <%= label zone, :realTimePrice, class: "control-label" %>
     <%= text_input  zone, :realTimePrice, class: "form-control realTimePrice" %>
     <%= error_tag zone, :realTimePrice %>
@@ -156,6 +156,7 @@ startTime.addEventListener('keyup', function (event) {
                 }
             }
             else if (PaymentType.value == "Real") {
+                payingNow.style.display = "none";
                 if (endTimeArr[0] - startTimeArr[0] == 1 && endTimeArr[1] - startTimeArr[1] < 0) {
                     TimeDurationHour = 0
                     TimeDurationMinute = 60 + (endTimeArr[1] - startTimeArr[1])
@@ -231,6 +232,7 @@ endTime.addEventListener('keyup', function (event) {
                 }
             }
             else if (PaymentType.value == "Real") {
+                payingNow.style.display = "none";
                 if (endTimeArr[0] - startTimeArr[0] == 1 && endTimeArr[1] - startTimeArr[1] < 0) {
                     TimeDurationHour = 0
                     TimeDurationMinute = 60 + (endTimeArr[1] - startTimeArr[1])
