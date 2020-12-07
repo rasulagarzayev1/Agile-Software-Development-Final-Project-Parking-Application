@@ -52,18 +52,24 @@ defmodule AgileparkingWeb.ZoneController do
         render(conn, "index.html", type: 3)
     end
 
+    def filtering(list, address) do
+      list
+      |> Enum.filter(fn tuple -> distance(tuple.name, address ) < 500  end)
+    end
+
     def create(conn, params) do
         type = 0
-        query = from t in Zone, where: t.available == true, select: t
-        zones = Repo.all(query)
         address = params["name"]
         time = params["time"]
+        query = from t in Zone, where: t.available == true, select: t
+        zones = Repo.all(query)
+        zones = zones |> filtering(address)
         milis = "00"
         time = "#{time}:#{milis}"
         now = Time.utc_now()
         now = Time.add(now, 7200, :second)
         p =  Agileparking.Geolocation.find_location(address)
-        if Enum.at(p,0) == -1 do
+        if ((Enum.at(p,0) == -1) or (Enum.count(zones) == 0)) do
             zones = Enum.map(zones, fn zone  -> {zone, -1,0, 0, 0} end)
             render(conn, "index.html", zones: zones,type: 0)
         else
