@@ -1,8 +1,8 @@
  <label for="PaymentType">Payment type:</label>
    <select name="PaymentType" id="PaymentType">
      <option value="0">Choose payment type</option>
-     <option value="Hourly">Hourly payment</option>
-     <option value="Real">Real time payment</option>
+     <option id="1" value="Hourly">Hourly payment</option>
+     <option id="2" value="Real">Real time payment</option>
     </select>
  <%= form_for @changeset, Routes.zone_path(@conn, :update, @zone), fn zone -> %>
 
