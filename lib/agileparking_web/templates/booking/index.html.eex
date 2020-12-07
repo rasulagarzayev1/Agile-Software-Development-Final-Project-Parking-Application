@@ -1,15 +1,15 @@
-<h1>Listing Bookings</h1>
+<h1>Your bookings</h1>
 
 <table>
   <thead>
     <tr>
-      <th>Payment status</th>
-      <th>Start date</th>
-      <th>End date</th>
-      <th>totalPrice</th>
-      <th>paymentType</th>
-      <th>parkingStatus</th>
-      <th>zoneId</th>
+      <th>Payment Status</th>
+      <th>Starting Time</th>
+      <th>Ending Time</th>
+      <th>Total Price</th>
+      <th>Payment Type</th>
+      <th>Parking Status</th>
+      <th>Zone Id</th>
       <th></th>
     </tr>
   </thead>
@@ -28,16 +28,24 @@
       <% else %>
       <td>
 
-        <span><%= link "Show", to: Routes.booking_path(@conn, :show, booking) %></span>
+        <span class="showBookings"><%= link "Show", to: Routes.booking_path(@conn, :show, booking) %></span>
          <%= if booking.payment_status != "Done" do %>
         <span id = "extend"><%= link "Extend", to: Routes.booking_path(@conn, :edit, booking) %></span>
         <%= end%>
-        <span><%= link "Finish", to: Routes.booking_path(@conn, :delete, booking), method: :delete, data: [confirm: "Are you sure?"] %></span>
+        <span class="finishhh"><%= link "Finish", to: Routes.booking_path(@conn, :delete, booking), method: :delete, data: [confirm: "Are you sure?"] %></span>
       </td>
       <%end%>
     </tr>
 <% end %>
   </tbody>
 </table>
-
-<span><%= link "New Booking", to: Routes.booking_path(@conn, :new) %></span>
+<style>
+#extend a{
+  color:#ff9c22!important;
+  display:inline-block;
+}
+.finishhh a{
+  color:red!important;
+  display:inline-block;
+}
+</style>
