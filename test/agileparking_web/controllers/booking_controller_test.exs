@@ -123,67 +123,67 @@ defmodule AgileparkingWeb.BookingControllerTest do
     assert html_response(conn, 200) =~ "#{payment}"
   end
 
-  # Requirements 3.2
-  test "Invalid times/dates ", %{conn: conn} do
-    Repo.insert!(%Zone{id: 1, name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "A"})
-    # END IS BEFORE THE START TIME
-    conn = put conn, "/zones/1", %{id: 1, zone: [end_date: "10:00", hourlyPrice: "2", pay_now: "true", payment_type: "Hourly", realTimePrice: "16", start_date: "12:00", total_payment: "2"]}
-    conn = get conn, redirected_to(conn)
-    assert html_response(conn, 200) =~ ~r/The start always should occur before the end time/
-  end
+  # # Requirements 3.2
+  # test "Invalid times/dates ", %{conn: conn} do
+  #   Repo.insert!(%Zone{id: 1, name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "A"})
+  #   # END IS BEFORE THE START TIME
+  #   conn = put conn, "/zones/1", %{id: 1, zone: [end_date: "10:00", hourlyPrice: "2", pay_now: "true", payment_type: "Hourly", realTimePrice: "16", start_date: "12:00", total_payment: "2"]}
+  #   conn = get conn, redirected_to(conn)
+  #   assert html_response(conn, 200) =~ ~r/The start always should occur before the end time/
+  # end
 
-  # Requirements 3.3
-  test "Blocks the corresponding parking space", %{conn: conn} do
-    Repo.insert!(%Zone{id: 1, name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "A"})
-    # FIRST BOOKING IS ADDED AND SLOT AVAILABILITY UPDATED
-    conn = put conn, "/zones/1", %{id: 1, zone: [end_date: "13:00", hourlyPrice: "2", pay_now: "true", payment_type: "Hourly", realTimePrice: "16", start_date: "12:00", total_payment: "2"]}
-    conn = get conn, redirected_to(conn)
+  # # Requirements 3.3
+  # test "Blocks the corresponding parking space", %{conn: conn} do
+  #   Repo.insert!(%Zone{id: 1, name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "A"})
+  #   # FIRST BOOKING IS ADDED AND SLOT AVAILABILITY UPDATED
+  #   conn = put conn, "/zones/1", %{id: 1, zone: [end_date: "13:00", hourlyPrice: "2", pay_now: "true", payment_type: "Hourly", realTimePrice: "16", start_date: "12:00", total_payment: "2"]}
+  #   conn = get conn, redirected_to(conn)
 
-    # SECOND BOOKING IS TRIED TO ADD BUT UNSUCCESSFUL BECAUSE THE SLOT IS NOT AVAILABLE
-    conn = put conn, "/zones/1", %{id: 1, zone: [end_date: "13:00", hourlyPrice: "2", pay_now: "true", payment_type: "Hourly", realTimePrice: "16", start_date: "12:00", total_payment: "2"]}
-    conn = get conn, redirected_to(conn)
-    assert html_response(conn, 200) =~ ~r/There is no an available slot. Please choose new parking area/
-  end
+  #   # SECOND BOOKING IS TRIED TO ADD BUT UNSUCCESSFUL BECAUSE THE SLOT IS NOT AVAILABLE
+  #   conn = put conn, "/zones/1", %{id: 1, zone: [end_date: "13:00", hourlyPrice: "2", pay_now: "true", payment_type: "Hourly", realTimePrice: "16", start_date: "12:00", total_payment: "2"]}
+  #   conn = get conn, redirected_to(conn)
+  #   assert html_response(conn, 200) =~ ~r/There is no an available slot. Please choose new parking area/
+  # end
 
-  # Requirement 4.1
-  test "Pay before starting the parking period", %{conn: conn} do
+  # # Requirement 4.1
+  # test "Pay before starting the parking period", %{conn: conn} do
 
-    Repo.insert!(%Zone{id: 1, name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "A"})
-    conn = put conn, "/zones/1", %{id: 1, zone: [end_date: "13:30", hourlyPrice: "2", pay_now: "true", payment_type: "Hourly", realTimePrice: "16", start_date: "12:00", total_payment: "2"]}
-    conn = get conn, redirected_to(conn)
-    balance = "12.43"
-    user = Agileparking.Authentication.load_current_user(conn)
-    {old_balance, _ } = Float.parse(balance)
-    {new_balance, _ } = Float.parse(user.balance)
-    price = totalPriceHourly("12:00", "13:30", 2)
+  #   Repo.insert!(%Zone{id: 1, name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "A"})
+  #   conn = put conn, "/zones/1", %{id: 1, zone: [end_date: "13:30", hourlyPrice: "2", pay_now: "true", payment_type: "Hourly", realTimePrice: "16", start_date: "12:00", total_payment: "2"]}
+  #   conn = get conn, redirected_to(conn)
+  #   balance = "12.43"
+  #   user = Agileparking.Authentication.load_current_user(conn)
+  #   {old_balance, _ } = Float.parse(balance)
+  #   {new_balance, _ } = Float.parse(user.balance)
+  #   price = totalPriceHourly("12:00", "13:30", 2)
 
-    assert old_balance - price == new_balance
-  end
+  #   assert old_balance - price == new_balance
+  # end
 
-  # Requirement 4.2
-  test "Pay after extending the parking period", %{conn: conn} do
+  # # Requirement 4.2
+  # test "Pay after extending the parking period", %{conn: conn} do
 
-    Repo.insert!(%Zone{id: 1, name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "A"})
-    conn = put conn, "/zones/1", %{id: 1, zone: [id: 1, end_date: "13:30", hourlyPrice: "2", pay_now: "false", payment_type: "Hourly", realTimePrice: "16", start_date: "12:00", total_payment: "2"]}
-    conn = get conn, redirected_to(conn)
-    conn = put conn, "/bookings/1", %{id: 1, booking: [id: 1, end_date: "14:30"]}
-    conn = get conn, redirected_to(conn)
+  #   Repo.insert!(%Zone{id: 1, name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "A"})
+  #   conn = put conn, "/zones/1", %{id: 1, zone: [id: 1, end_date: "13:30", hourlyPrice: "2", pay_now: "false", payment_type: "Hourly", realTimePrice: "16", start_date: "12:00", total_payment: "2"]}
+  #   conn = get conn, redirected_to(conn)
+  #   conn = put conn, "/bookings/1", %{id: 1, booking: [id: 1, end_date: "14:30"]}
+  #   conn = get conn, redirected_to(conn)
 
-    user = Agileparking.Authentication.load_current_user(conn)
+  #   user = Agileparking.Authentication.load_current_user(conn)
 
-    {old_balance, _ } = Float.parse(user.balance)
+  #   {old_balance, _ } = Float.parse(user.balance)
 
-    conn = delete conn, "/bookings/1", %{id: 1, booking: [id: 1, end_date: "14:30"]}
-    conn = get conn, redirected_to(conn)
+  #   conn = delete conn, "/bookings/1", %{id: 1, booking: [id: 1, end_date: "14:30"]}
+  #   conn = get conn, redirected_to(conn)
 
-    user = Agileparking.Authentication.load_current_user(conn)
-    {new_balance, _ } = Float.parse(user.balance)
+  #   user = Agileparking.Authentication.load_current_user(conn)
+  #   {new_balance, _ } = Float.parse(user.balance)
 
-    price = totalPriceHourly("12:00", "14:30", 2)
+  #   price = totalPriceHourly("12:00", "14:30", 2)
 
-    #  assert html_response(conn, 200) =~ ~r/8.43/
-    assert old_balance - price == new_balance
-  end
+  #   #  assert html_response(conn, 200) =~ ~r/8.43/
+  #   assert old_balance - price == new_balance
+  # end
 
   def product(a, b), do: a * b
       def sum(a, b), do: a + b
