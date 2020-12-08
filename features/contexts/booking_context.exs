@@ -169,4 +169,40 @@ defmodule BookingContext do
     {:ok, state}
   end
 
+  and_ ~r/^I click Pay Later button$/, fn state ->
+    click({:id, "payLater"})
+    :timer.sleep(1000)
+    {:ok, state}
+  end
+
+  and_ ~r/^I see success message$/, fn state ->
+    assert visible_in_page? ~r/Added to the monhtly payment/
+    {:ok, state}
+  end
+
+  and_ ~r/^I click My profile button$/, fn state ->
+    click({:id, "myAccount"})
+    {:ok, state}
+  end
+
+  and_ ~r/^I navigate to users page$/, fn state ->
+    navigate_to "/users"
+    {:ok, state}
+  end
+
+  and_ ~r/^I click show details button$/, fn state ->
+    click({:id, "show"})
+    {:ok, state}
+  end
+
+  and_ ~r/^I click Pay bill button$/, fn state ->
+    click({:id, "payBill"})
+    {:ok, state}
+  end
+
+  then_ ~r/^I will recieve success message$/, fn state ->
+    assert visible_in_page? ~r/Your payment has been paid succesfully/
+    {:ok, state}
+  end
+
 end

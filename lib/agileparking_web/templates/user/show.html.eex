@@ -23,12 +23,12 @@
     <strong>Password:</strong>
     <%= @user.password %>
   </li>
-  
+
 
 </ul>
 
 <span id="add"><%= link "Add balance", to: Routes.user_path(@conn, :edit, @user) %></span>
-<span id="add"><%= link "Pay Bill", to: Routes.user_path(@conn, :paynow, @user.id) %></span>
+<span id="payBill"><%= link "Pay Bill", to: Routes.user_path(@conn, :paynow, @user.id) %></span>
 <span><%= link "Back", to: Routes.user_path(@conn, :index) %></span>
 <span class="back"><%= link "Back", to: Routes.user_path(@conn, :index) %></span>
 <style>
