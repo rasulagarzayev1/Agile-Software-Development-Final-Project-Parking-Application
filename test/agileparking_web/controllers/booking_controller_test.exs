@@ -1,91 +1,3 @@
-# defmodule AgileparkingWeb.BookingControllerTest do
-#   use AgileparkingWeb.ConnCase
-
-#   alias Agileparking.Bookings
-
-#   @create_attrs %{end_date: "some end_date", payment_status: "some payment_status", start_date: "some start_date", zone_type: "some zone_type"}
-#   @update_attrs %{end_date: "some updated end_date", payment_status: "some updated payment_status", start_date: "some updated start_date", zone_type: "some updated zone_type"}
-#   @invalid_attrs %{end_date: nil, payment_status: nil, start_date: nil, zone_type: nil}
-
-#   def fixture(:booking) do
-#     {:ok, booking} = Bookings.create_booking(@create_attrs)
-#     booking
-#   end
-
-#   describe "index" do
-#     test "lists all bookings", %{conn: conn} do
-#       conn = get(conn, Routes.booking_path(conn, :index))
-#       assert html_response(conn, 200) =~ "Listing Bookings"
-#     end
-#   end
-
-#   describe "new booking" do
-#     test "renders form", %{conn: conn} do
-#       conn = get(conn, Routes.booking_path(conn, :new))
-#       assert html_response(conn, 200) =~ "New Booking"
-#     end
-#   end
-
-#   describe "create booking" do
-#     test "redirects to show when data is valid", %{conn: conn} do
-#       conn = post(conn, Routes.booking_path(conn, :create), booking: @create_attrs)
-
-#       assert %{id: id} = redirected_params(conn)
-#       assert redirected_to(conn) == Routes.booking_path(conn, :show, id)
-
-#       conn = get(conn, Routes.booking_path(conn, :show, id))
-#       assert html_response(conn, 200) =~ "Show Booking"
-#     end
-
-#     test "renders errors when data is invalid", %{conn: conn} do
-#       conn = post(conn, Routes.booking_path(conn, :create), booking: @invalid_attrs)
-#       assert html_response(conn, 200) =~ "New Booking"
-#     end
-#   end
-
-#   describe "edit booking" do
-#     setup [:create_booking]
-
-#     test "renders form for editing chosen booking", %{conn: conn, booking: booking} do
-#       conn = get(conn, Routes.booking_path(conn, :edit, booking))
-#       assert html_response(conn, 200) =~ "Edit Booking"
-#     end
-#   end
-
-#   describe "update booking" do
-#     setup [:create_booking]
-
-#     test "redirects when data is valid", %{conn: conn, booking: booking} do
-#       conn = put(conn, Routes.booking_path(conn, :update, booking), booking: @update_attrs)
-#       assert redirected_to(conn) == Routes.booking_path(conn, :show, booking)
-
-#       conn = get(conn, Routes.booking_path(conn, :show, booking))
-#       assert html_response(conn, 200) =~ "some updated end_date"
-#     end
-
-#     test "renders errors when data is invalid", %{conn: conn, booking: booking} do
-#       conn = put(conn, Routes.booking_path(conn, :update, booking), booking: @invalid_attrs)
-#       assert html_response(conn, 200) =~ "Edit Booking"
-#     end
-#   end
-
-#   describe "delete booking" do
-#     setup [:create_booking]
-
-#     test "deletes chosen booking", %{conn: conn, booking: booking} do
-#       conn = delete(conn, Routes.booking_path(conn, :delete, booking))
-#       assert redirected_to(conn) == Routes.booking_path(conn, :index)
-#       assert_error_sent 404, fn ->
-#         get(conn, Routes.booking_path(conn, :show, booking))
-#       end
-#     end
-#   end
-
-#   defp create_booking(_) do
-#     booking = fixture(:booking)
-#     %{booking: booking}
-#   end
-# end
 
 defmodule AgileparkingWeb.BookingControllerTest do
   use AgileparkingWeb.ConnCase
@@ -96,10 +8,10 @@ defmodule AgileparkingWeb.BookingControllerTest do
   alias Agileparking.Bookings.Booking
   import Ecto.Query, only: [from: 2]
 
-  @create_attrs %{id: 1, name: "sergi", email: "sergi@gmail.com", license_number: "1234567889", password: "12345678", balance: "12.43"}
+  @create_attrs %{id: 1, name: "sergi", email: "sergi@gmail.com", license_number: "1234567889", password: "12345678", balance: "12.43", monthly_bill: "4.28"}
 
   setup do
-    user = Repo.insert!(%User{name: "sergi", email: "sergi@gmail.com", license_number: "1234567889", password: "12345678", balance: "12.43"})
+    user = Repo.insert!(%User{name: "sergi", email: "sergi@gmail.com", license_number: "1234567889", password: "12345678", balance: "12.43", monthly_bill: "4.28"})
     conn = build_conn()
            |> bypass_through(Agileparking.Router, [:browser, :browser_auth, :ensure_auth])
            |> get("/")
@@ -145,6 +57,19 @@ defmodule AgileparkingWeb.BookingControllerTest do
     assert html_response(conn, 200) =~ ~r/There is no an available slot. Please choose new parking area/
   end
 
+  # Requirements 3.5
+  test "Extend parking period", %{conn: conn} do
+    Repo.insert!(%Zone{id: 1, name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "A"})
+    conn = put conn, "/zones/1", %{id: 1, zone: [id: 1, end_date: "13:30", hourlyPrice: "2", pay_now: "false", payment_type: "Hourly", realTimePrice: "16", start_date: "12:00", total_payment: "2"]}
+    conn = get conn, redirected_to(conn)
+    booking =  Repo.get!(Booking, 1)
+
+    conn = put conn, "/bookings/1", %{id: 1, booking: [id: 1, end_date: "11:30"]}
+    conn = get conn, redirected_to(conn)
+
+    assert html_response(conn, 200) =~ ~r/End date should be greater than start date/
+  end
+
   # Requirement 4.1
   test "Pay before starting the parking period", %{conn: conn} do
 
@@ -185,6 +110,52 @@ defmodule AgileparkingWeb.BookingControllerTest do
     assert old_balance - price == new_balance
   end
 
+   # Requirement 4.3
+   test "Pay at the end", %{conn: conn} do
+
+    Repo.insert!(%Zone{id: 1, name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "A"})
+    conn = put conn, "/zones/1", %{id: 1, zone: [id: 1, end_date: "12:37", hourlyPrice: "2", pay_now: "false", payment_type: "Real", realTimePrice: "16", start_date: "12:00", total_payment: "2"]}
+    conn = get conn, redirected_to(conn)
+
+    user = Agileparking.Authentication.load_current_user(conn)
+
+    {old_balance, _ } = Float.parse(user.balance)
+
+    conn = delete conn, "/bookings/1", %{id: 1}
+    conn = get conn, redirected_to(conn)
+
+    user = Agileparking.Authentication.load_current_user(conn)
+    {new_balance, _ } = Float.parse(user.balance)
+
+    price = totalPriceReal("12:00", "12:37", 16)
+    assert old_balance - price == new_balance
+  end
+
+  # Requirement 4.4
+  test "Pay at the end of the month", %{conn: conn} do
+
+    Repo.insert!(%Zone{id: 1, name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "A"})
+    conn = put conn, "/zones/1", %{id: 1, zone: [id: 1, end_date: "12:37", hourlyPrice: "2", pay_now: "false", payment_type: "Real", realTimePrice: "16", start_date: "12:00", total_payment: "2"]}
+    conn = get conn, redirected_to(conn)
+
+    user = Agileparking.Authentication.load_current_user(conn)
+
+    {old_balance, _ } = Float.parse(user.balance)
+    {old_monthly_bill, _ } = Float.parse(user.monthly_bill)
+
+    conn = get conn, "/bookings/paylater/1", %{id: 1}
+    conn = get conn, redirected_to(conn)
+
+    user = Agileparking.Authentication.load_current_user(conn)
+    bill = String.slice(user.monthly_bill, 0..5)
+    {new_balance, _ } = Float.parse(user.balance)
+    {new_monthly_bill, _ } = Float.parse(bill)
+
+    price = totalPriceReal("12:00", "12:37", 16)
+    bill_difference = Float.ceil(sub(new_monthly_bill, old_monthly_bill), 2 )
+    assert old_balance - new_balance == 0 and bill_difference == price
+  end
+
   def product(a, b), do: a * b
       def sum(a, b), do: a + b
       def sub(a, b), do: a - b
@@ -206,5 +177,14 @@ defmodule AgileparkingWeb.BookingControllerTest do
       true -> totalPrice = product(divi(time, 60), hourlyPrice)
       _ -> totalPrice = product(sum(divi(sub(time, Integer.mod(time , 60)), 60),1), hourlyPrice)
     end
+  end
+
+  def totalPriceReal(start_date, end_date, realTimePrice) do
+    time = totalTime(start_date, end_date)
+    case Integer.mod(time , 5) == 0 do
+      true -> totalPrice = product(divi(time, 5), divi(realTimePrice,100))
+      _ -> totalPrice = product(sum(divi(sub(time, Integer.mod(time , 5)), 5),1), divi(realTimePrice,100))
+    end
+
   end
 end

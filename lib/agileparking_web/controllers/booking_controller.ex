@@ -45,10 +45,11 @@ defmodule AgileparkingWeb.BookingController do
     Repo.get_by(Booking,id: id)
      |>Ecto.Changeset.change(%{end_date: booking_params["end_date"],totalPrice: Float.to_string(total) })
     |>Repo.update()
-    end
     conn
     |> put_flash(:info, "Succesfully updated")
     |>redirect(to: Routes.booking_path(conn,:index))
+    end
+
 
   end
 

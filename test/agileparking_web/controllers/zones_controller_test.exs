@@ -27,7 +27,7 @@ defmodule AgileparkingWeb.ZonesControllerTest do
     {:ok, conn: conn}
   end
 
-
+  # Requirement 2.1
   test "Only shows available", %{conn: conn} do
     Repo.insert!(%Zone{name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "B"})
     Repo.insert!(%Zone{name: "Puiestee 114", hourlyPrice: 2, realTimePrice: 16, available: false, zone: "B"})
@@ -40,6 +40,7 @@ defmodule AgileparkingWeb.ZonesControllerTest do
       refute html_response(conn, 200) =~ ~r/Puiestee 114/
   end
 
+  # Requirement 2.1
   test "Only shows available among radius", %{conn: conn} do
     Repo.insert!(%Zone{name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "B"})
     Repo.insert!(%Zone{name: "Puiestee 114", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "B"})
@@ -52,6 +53,7 @@ defmodule AgileparkingWeb.ZonesControllerTest do
     refute html_response(conn, 200) =~ ~r/Puiestee 114/
   end
 
+  # Requirement 2.2
   test "Zone A price shows correctly", %{conn: conn} do
     Repo.insert!(%Zone{name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "A"})
     conn =
@@ -63,6 +65,7 @@ defmodule AgileparkingWeb.ZonesControllerTest do
     assert html_response(conn, 200) =~ "8"
   end
 
+  # Requirement 2.2
   test "Zone B price shows correctly", %{conn: conn} do
     Repo.insert!(%Zone{name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "B"})
     conn =
@@ -74,7 +77,7 @@ defmodule AgileparkingWeb.ZonesControllerTest do
     assert html_response(conn, 200) =~ "16"
   end
 
-
+  # Requirement 2.3
   test "Hourly price calculated correctly", %{conn: conn} do
     Repo.insert!(%Zone{name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "B"})
     now = Time.utc_now()
@@ -93,6 +96,7 @@ defmodule AgileparkingWeb.ZonesControllerTest do
     assert html_response(conn, 200) =~ "#{price}"
   end
 
+  # Requirement 2.4
   test "Real Time price calculated correctly", %{conn: conn} do
     Repo.insert!(%Zone{name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "B"})
     now = Time.utc_now()
