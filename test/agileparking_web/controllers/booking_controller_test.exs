@@ -1,210 +1,156 @@
-# defmodule AgileparkingWeb.BookingControllerTest do
-#   use AgileparkingWeb.ConnCase
-
-#   alias Agileparking.Bookings
-
-#   @create_attrs %{end_date: "some end_date", payment_status: "some payment_status", start_date: "some start_date", zone_type: "some zone_type"}
-#   @update_attrs %{end_date: "some updated end_date", payment_status: "some updated payment_status", start_date: "some updated start_date", zone_type: "some updated zone_type"}
-#   @invalid_attrs %{end_date: nil, payment_status: nil, start_date: nil, zone_type: nil}
-
-#   def fixture(:booking) do
-#     {:ok, booking} = Bookings.create_booking(@create_attrs)
-#     booking
-#   end
-
-#   describe "index" do
-#     test "lists all bookings", %{conn: conn} do
-#       conn = get(conn, Routes.booking_path(conn, :index))
-#       assert html_response(conn, 200) =~ "Listing Bookings"
-#     end
-#   end
-
-#   describe "new booking" do
-#     test "renders form", %{conn: conn} do
-#       conn = get(conn, Routes.booking_path(conn, :new))
-#       assert html_response(conn, 200) =~ "New Booking"
-#     end
-#   end
-
-#   describe "create booking" do
-#     test "redirects to show when data is valid", %{conn: conn} do
-#       conn = post(conn, Routes.booking_path(conn, :create), booking: @create_attrs)
-
-#       assert %{id: id} = redirected_params(conn)
-#       assert redirected_to(conn) == Routes.booking_path(conn, :show, id)
-
-#       conn = get(conn, Routes.booking_path(conn, :show, id))
-#       assert html_response(conn, 200) =~ "Show Booking"
-#     end
-
-#     test "renders errors when data is invalid", %{conn: conn} do
-#       conn = post(conn, Routes.booking_path(conn, :create), booking: @invalid_attrs)
-#       assert html_response(conn, 200) =~ "New Booking"
-#     end
-#   end
-
-#   describe "edit booking" do
-#     setup [:create_booking]
-
-#     test "renders form for editing chosen booking", %{conn: conn, booking: booking} do
-#       conn = get(conn, Routes.booking_path(conn, :edit, booking))
-#       assert html_response(conn, 200) =~ "Edit Booking"
-#     end
-#   end
-
-#   describe "update booking" do
-#     setup [:create_booking]
-
-#     test "redirects when data is valid", %{conn: conn, booking: booking} do
-#       conn = put(conn, Routes.booking_path(conn, :update, booking), booking: @update_attrs)
-#       assert redirected_to(conn) == Routes.booking_path(conn, :show, booking)
-
-#       conn = get(conn, Routes.booking_path(conn, :show, booking))
-#       assert html_response(conn, 200) =~ "some updated end_date"
-#     end
-
-#     test "renders errors when data is invalid", %{conn: conn, booking: booking} do
-#       conn = put(conn, Routes.booking_path(conn, :update, booking), booking: @invalid_attrs)
-#       assert html_response(conn, 200) =~ "Edit Booking"
-#     end
-#   end
-
-#   describe "delete booking" do
-#     setup [:create_booking]
-
-#     test "deletes chosen booking", %{conn: conn, booking: booking} do
-#       conn = delete(conn, Routes.booking_path(conn, :delete, booking))
-#       assert redirected_to(conn) == Routes.booking_path(conn, :index)
-#       assert_error_sent 404, fn ->
-#         get(conn, Routes.booking_path(conn, :show, booking))
-#       end
-#     end
-#   end
-
-#   defp create_booking(_) do
-#     booking = fixture(:booking)
-#     %{booking: booking}
-#   end
-# end
-
-defmodule AgileparkingWeb.BookingControllerTest do
-  use AgileparkingWeb.ConnCase
-
-  alias Agileparking.{Repo, Sales.Zone}
-  alias Agileparking.Guardian
-  alias Agileparking.Accounts.User
-  alias Agileparking.Bookings.Booking
+defmodule AgileparkingWeb.BookingController do
+  use AgileparkingWeb, :controller
   import Ecto.Query, only: [from: 2]
+  alias Ecto.{Changeset, Multi}
+  alias Agileparking.Repo
+  alias Agileparking.Bookings
+  alias Agileparking.Bookings.Booking
+  alias Agileparking.Sales.Zone
+  alias Agileparking.Accounts.User
 
-  @create_attrs %{id: 1, name: "sergi", email: "sergi@gmail.com", license_number: "1234567889", password: "12345678", balance: "12.43"}
 
-  setup do
-    user = Repo.insert!(%User{name: "sergi", email: "sergi@gmail.com", license_number: "1234567889", password: "12345678", balance: "12.43"})
-    conn = build_conn()
-           |> bypass_through(Agileparking.Router, [:browser, :browser_auth, :ensure_auth])
-           |> get("/")
-           |> Map.update!(:state, fn (_) -> :set end)
-           |> Guardian.Plug.sign_in(user)
-           |> send_resp(200, "Flush the session")
-           |> recycle
-    {:ok, conn: conn}
+  def index(conn, _params) do
+    user = Agileparking.Authentication.load_current_user(conn)
+    bookings = Repo.all(from b in Booking, where: b.user_id == ^user.id)
+
+    render conn, "index.html", bookings: bookings
   end
 
-  # Requirements 3.1
-  test "Check database", %{conn: conn} do
-    Repo.insert!(%Zone{id: 1, name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "A"})
-    # ADD BOOKING
-    conn = put conn, "/zones/1", %{id: 1, zone: [id: 1, end_date: "14:00", hourlyPrice: "2", pay_now: "true", payment_type: "Hourly", realTimePrice: "16", start_date: "12:00", total_payment: "2"]}
-    conn = get conn, redirected_to(conn)
-    # CHECKING DATABASE BY CHECKING BOOKING
-    booking =  Repo.get!(Booking, 1)
-    payment = booking.paymentType
-    # CHECKING DATABASE BY CHECKING BOOKING IN BOOKINGS INDEX PAGE
-    assert html_response(conn, 200) =~ "#{payment}"
+  def show(conn,%{"id"=>id}) do
+    booking=Bookings.get_booking!(id)
+
+    render(conn,"show.html",booking: booking)
   end
 
-  # # Requirements 3.2
-  # test "Invalid times/dates ", %{conn: conn} do
-  #   Repo.insert!(%Zone{id: 1, name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "A"})
-  #   # END IS BEFORE THE START TIME
-  #   conn = put conn, "/zones/1", %{id: 1, zone: [end_date: "10:00", hourlyPrice: "2", pay_now: "true", payment_type: "Hourly", realTimePrice: "16", start_date: "12:00", total_payment: "2"]}
-  #   conn = get conn, redirected_to(conn)
-  #   assert html_response(conn, 200) =~ ~r/The start always should occur before the end time/
-  # end
+  def edit(conn, %{"id" => id}) do
+    booking = Repo.get!(Booking, id)
+    changeset = Booking.changeset(booking, %{})
 
-  # # Requirements 3.3
-  # test "Blocks the corresponding parking space", %{conn: conn} do
-  #   Repo.insert!(%Zone{id: 1, name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "A"})
-  #   # FIRST BOOKING IS ADDED AND SLOT AVAILABILITY UPDATED
-  #   conn = put conn, "/zones/1", %{id: 1, zone: [end_date: "13:00", hourlyPrice: "2", pay_now: "true", payment_type: "Hourly", realTimePrice: "16", start_date: "12:00", total_payment: "2"]}
-  #   conn = get conn, redirected_to(conn)
+    render(conn, "edit.html", booking: booking, changeset: changeset)
+  end
 
-  #   # SECOND BOOKING IS TRIED TO ADD BUT UNSUCCESSFUL BECAUSE THE SLOT IS NOT AVAILABLE
-  #   conn = put conn, "/zones/1", %{id: 1, zone: [end_date: "13:00", hourlyPrice: "2", pay_now: "true", payment_type: "Hourly", realTimePrice: "16", start_date: "12:00", total_payment: "2"]}
-  #   conn = get conn, redirected_to(conn)
-  #   assert html_response(conn, 200) =~ ~r/There is no an available slot. Please choose new parking area/
-  # end
+  def update(conn,%{"id" => id, "booking" => booking_params}) do
 
-  # # Requirement 4.1
-  # test "Pay before starting the parking period", %{conn: conn} do
+    booking=Repo.get_by(Booking,id: id)
 
-  #   Repo.insert!(%Zone{id: 1, name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "A"})
-  #   conn = put conn, "/zones/1", %{id: 1, zone: [end_date: "13:30", hourlyPrice: "2", pay_now: "true", payment_type: "Hourly", realTimePrice: "16", start_date: "12:00", total_payment: "2"]}
-  #   conn = get conn, redirected_to(conn)
-  #   balance = "12.43"
-  #   user = Agileparking.Authentication.load_current_user(conn)
-  #   {old_balance, _ } = Float.parse(balance)
-  #   {new_balance, _ } = Float.parse(user.balance)
-  #   price = totalPriceHourly("12:00", "13:30", 2)
+    zones=Repo.get_by(Zone,id: booking.zoneId)
 
-  #   assert old_balance - price == new_balance
-  # end
+    total=totalPriceHourly(booking.start_date,booking_params["end_date"],zones.hourlyPrice)
 
-  # # Requirement 4.2
-  # test "Pay after extending the parking period", %{conn: conn} do
+    if totalTime(booking.start_date,booking_params["end_date"])<0 do
+      conn
+      |>put_flash(:error, "End date should be greater than start date")
+      |> redirect(to: Routes.booking_path(conn, :index))
+    else
+    Repo.get_by(Booking,id: id)
+     |>Ecto.Changeset.change(%{end_date: booking_params["end_date"],totalPrice: Float.to_string(total) })
+    |>Repo.update()
+    conn
+    |> put_flash(:info, "Succesfully updated")
+    |>redirect(to: Routes.booking_path(conn,:index))
+    end
 
-  #   Repo.insert!(%Zone{id: 1, name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "A"})
-  #   conn = put conn, "/zones/1", %{id: 1, zone: [id: 1, end_date: "13:30", hourlyPrice: "2", pay_now: "false", payment_type: "Hourly", realTimePrice: "16", start_date: "12:00", total_payment: "2"]}
-  #   conn = get conn, redirected_to(conn)
-  #   conn = put conn, "/bookings/1", %{id: 1, booking: [id: 1, end_date: "14:30"]}
-  #   conn = get conn, redirected_to(conn)
 
-  #   user = Agileparking.Authentication.load_current_user(conn)
+  end
 
-  #   {old_balance, _ } = Float.parse(user.balance)
+  def paylater(conn, %{"id"=>id}) do
+    user = Agileparking.Authentication.load_current_user(conn)
+     booking=Repo.get_by(Booking,id: id)
+     {monthly_bill,_}=Float.parse(user.monthly_bill)
+     {totalPrice,_}=Float.parse(booking.totalPrice)
+     Repo.get_by(User,id: user.id)
+     |>Ecto.Changeset.change(%{monthly_bill: Float.to_string(sum(monthly_bill,totalPrice))})
+     |>Repo.update()
 
-  #   conn = delete conn, "/bookings/1", %{id: 1, booking: [id: 1, end_date: "14:30"]}
-  #   conn = get conn, redirected_to(conn)
+     Repo.get_by(Booking,id: booking.id)
+     |> Ecto.Changeset.change(%{payment_status: "Done", parkingStatus: "Finished"})
+     |>Repo.update()
 
-  #   user = Agileparking.Authentication.load_current_user(conn)
-  #   {new_balance, _ } = Float.parse(user.balance)
+     Repo.get_by(Zone,id: booking.zoneId)
+     |> Ecto.Changeset.change(%{available: true})
+     |>Repo.update()
 
-  #   price = totalPriceHourly("12:00", "14:30", 2)
+    conn
+    |>put_flash(:info, "Added to the monhtly payment")
+    |>redirect(to: Routes.booking_path(conn,:index))
 
-  #   #  assert html_response(conn, 200) =~ ~r/8.43/
-  #   assert old_balance - price == new_balance
-  # end
+  end
 
-  def product(a, b), do: a * b
+  def delete(conn,%{"id"=>id}) do
+    user = Agileparking.Authentication.load_current_user(conn)
+    booking=Bookings.get_booking!(id)
+
+
+
+    Repo.get_by(Zone,id: booking.zoneId)
+             |> Ecto.Changeset.change(%{available: true})
+             |>Repo.update()
+
+    if booking.payment_status=="Pending" do
+        case booking.end_date !="-" do
+          true->
+            {current_balance,_}=Float.parse(user.balance)
+            {totalPrice,_}=Float.parse(booking.totalPrice)
+            case sub(current_balance,totalPrice)>0 do
+              true->
+                Repo.get_by(User,id: user.id)
+                  |> Ecto.Changeset.change(%{balance: Float.to_string(sub(current_balance,totalPrice))})
+                  |>Repo.update()
+                  {:ok, _booking} = Repo.get_by(Booking,id: booking.id)
+                              |>Ecto.Changeset.change(%{parkingStatus: "Finished"})
+                              |>Repo.update()
+              _ -> conn
+              |> put_flash(:error, "There is not enough balance. Please increase balance")
+              |> redirect(to: Routes.booking_path(conn, :index))
+            end
+           _ -> conn
+             |> put_flash(:error,"Please enter the end date for calculation")
+             |> redirect(to: Routes.booking_path(conn,:edit,booking))
+        end
+      else
+        {:ok, _booking} = Repo.get_by(Booking,id: booking.id)
+                              |>Ecto.Changeset.change(%{parkingStatus: "Finished"})
+                              |>Repo.update()
+
+    end
+    conn
+    |> put_flash(:info,"Booking finished succesfully")
+    |> redirect(to: Routes.booking_path(conn,:index))
+
+  end
+      def product(a, b), do: a * b
       def sum(a, b), do: a + b
       def sub(a, b), do: a - b
       def divi(a, b), do: a / b
-  def totalTime(start_date, end_date) do
-    {startHour, _} = Integer.parse(String.slice(start_date, 0..1))
-    {startMin, _} = Integer.parse(String.slice(start_date, 3..4))
-    startTotalMin = sum(product(startHour, 60),startMin)
+      def totalTime(start_date, end_date) do
+        {startHour, _} = Integer.parse(String.slice(start_date, 0..1))
+        {startMin, _} = Integer.parse(String.slice(start_date, 3..4))
+        startTotalMin = sum(product(startHour, 60),startMin)
 
-    {endHour, _} = Integer.parse(String.slice(end_date, 0..1))
-    {endMin, _} = Integer.parse(String.slice(end_date, 3..4))
-    endTotalMin = sum(product(endHour, 60),endMin)
-    differenceMin = sub(endTotalMin, startTotalMin)
-  end
+        {endHour, _} = Integer.parse(String.slice(end_date, 0..1))
+        {endMin, _} = Integer.parse(String.slice(end_date, 3..4))
+        endTotalMin = sum(product(endHour, 60),endMin)
+        differenceMin = sub(endTotalMin, startTotalMin)
+      end
 
-  def totalPriceHourly(start_date, end_date, hourlyPrice) do
-    time = totalTime(start_date, end_date)
-    case Integer.mod(time , 60) == 0 do
-      true -> totalPrice = product(divi(time, 60), hourlyPrice)
-      _ -> totalPrice = product(sum(divi(sub(time, Integer.mod(time , 60)), 60),1), hourlyPrice)
-    end
-  end
+      def totalPriceHourly(start_date, end_date, hourlyPrice) do
+        time = totalTime(start_date, end_date)
+        case Integer.mod(time , 60) == 0 do
+          true -> totalPrice = product(divi(time, 60), hourlyPrice)
+          _ -> totalPrice = product(sum(divi(sub(time, Integer.mod(time , 60)), 60),1), hourlyPrice)
+        end
+      end
+
+      def totalPriceReal(start_date, end_date, realTimePrice) do
+        time = totalTime(start_date, end_date)
+        case Integer.mod(time , 5) == 0 do
+          true -> totalPrice = product(divi(time, 5), divi(realTimePrice,100))
+          _ -> totalPrice = product(sum(divi(sub(time, Integer.mod(time , 5)), 5),1), divi(realTimePrice,100))
+        end
+
+      end
+
+
+
+
 end

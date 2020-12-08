@@ -26,12 +26,14 @@ defmodule AgileparkingWeb.UsersControllerTest do
     assert html_response(conn, 200) =~ "My profile"
   end
 
+  # Requirement 1.1
   test "User registers correctly", %{conn: conn} do
     conn = post conn, "/users", %{user: [name: "fred1", email: "farid@gmail.com", license_number: "1234567676", password: "parool" ]}
     conn = get conn, redirected_to(conn)
     assert html_response(conn, 200) =~ ~r/User created successfully./
   end
 
+  # Requirement 1.1
   test "User registers failure", %{conn: conn} do
     conn = post conn, "/users", %{user: [name: "fred1", email: "farid", license_number: "1234567676", password: "parool" ]}
 
@@ -48,7 +50,7 @@ defmodule AgileparkingWeb.UsersControllerTest do
     conn = put conn, "/users/1", %{id: 1, user: [name: "sergi", email: "sergi@gmail.com", license_number: "1234567889", password: "12345678", balance: "3.45"]}
     conn = get conn, redirected_to(conn)
     assert html_response(conn, 200) =~ ~r/Please, add card!/
-  end 
+  end
 
   test "Increase balance success", %{conn: conn} do
     conn = post conn, "/cards", %{card: [name: "sergi", number: "1234567812345678", month: "12", year: "2020", cvc: "123" ]}
