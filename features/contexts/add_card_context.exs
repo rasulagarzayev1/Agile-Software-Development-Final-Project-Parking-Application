@@ -15,7 +15,7 @@ defmodule AddCardContext do
       Ecto.Adapters.SQL.Sandbox.mode(Agileparking.Repo, {:shared, self()})
 
       # Register and login new user for BDD tests
-      [%{name: "orkhan", email: "sergimartinez1@gmail.cat", license_number: "123456789a", password: "123456", balance: "12"}]
+      [%{name: "orkhan", email: "sergimartinez1@gmail.cat", license_number: "123456789a", password: "123456", balance: "12", monthly_bill: "0"}]
       |> Enum.map(fn user_data -> User.changeset(%User{}, user_data) end)
       |> Enum.each(fn changeset -> Repo.insert!(changeset) end)
 

@@ -17,7 +17,7 @@ defmodule Agileparking.Accounts.User do
 
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:name, :email, :password, :license_number, :balance])
+    |> cast(params, [:name, :email, :password, :license_number, :balance, :monthly_bill])
     |> validate_required([:name, :email, :license_number, :password])
     |> validate_format(:email, ~r/@/)
     |> validate_length(:password, min: 6)
