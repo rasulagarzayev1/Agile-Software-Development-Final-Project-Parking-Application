@@ -7,7 +7,7 @@ use Mix.Config
 # Run `mix help test` for more information.
 config :agileparking, Agileparking.Repo,
   username: "postgres",
-  password: "123456789",
+  password: "rasul0803",
   database: "agileparking_test#{System.get_env("MIX_TEST_PARTITION")}",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox

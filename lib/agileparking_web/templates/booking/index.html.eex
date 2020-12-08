@@ -28,26 +28,31 @@
       <% else %>
       <td>
 
-        <span><%= link "Show", to: Routes.booking_path(@conn, :show, booking) %></span>
          <%= if booking.payment_status != "Done" and booking.paymentType != "Real" do %>
-        <span><%= link "Extend", to: Routes.booking_path(@conn, :edit, booking) %></span>
-        
+        <span id="extend"><%= link "Extend", to: Routes.booking_path(@conn, :edit, booking) %></span>
+
         <%= end%>
-        <span><%= link "Pay Later", to: Routes.booking_path(@conn, :paylater, booking.id) %></span>
-        <span><%= link "Finish", to: Routes.booking_path(@conn, :delete, booking), method: :delete%></span>
+        <%= if booking.paymentType =="Real" do%>
+        <span id="payLater"><%= link "Pay Later", to: Routes.booking_path(@conn, :paylater, booking.id) %></span>
+        <% end%>
+        <span id="finish"><%= link "Finish", to: Routes.booking_path(@conn, :delete, booking), method: :delete%></span>
       </td>
       <%end%>
     </tr>
 <% end %>
   </tbody>
 </table>
+
 <style>
 #extend a{
   color:#ff9c22!important;
   display:inline-block;
 }
-.finish a{
+#finish a{
   color:red!important;
   display:inline-block;
+}
+.payLater a{
+  color:darkgreen!important;
 }
 </style>
