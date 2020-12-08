@@ -96,7 +96,7 @@ defmodule AgileparkingWeb.BookingControllerTest do
   alias Agileparking.Bookings.Booking
   import Ecto.Query, only: [from: 2]
 
-  @create_attrs %{name: "sergi", email: "sergi@gmail.com", license_number: "1234567889", password: "12345678", balance: "12.43"}
+  @create_attrs %{id: 1, name: "sergi", email: "sergi@gmail.com", license_number: "1234567889", password: "12345678", balance: "12.43"}
 
   setup do
     user = Repo.insert!(%User{name: "sergi", email: "sergi@gmail.com", license_number: "1234567889", password: "12345678", balance: "12.43"})
@@ -143,5 +143,68 @@ defmodule AgileparkingWeb.BookingControllerTest do
     conn = put conn, "/zones/1", %{id: 1, zone: [end_date: "13:00", hourlyPrice: "2", pay_now: "true", payment_type: "Hourly", realTimePrice: "16", start_date: "12:00", total_payment: "2"]}
     conn = get conn, redirected_to(conn)
     assert html_response(conn, 200) =~ ~r/There is no an available slot. Please choose new parking area/
+  end
+
+  # Requirement 4.1
+  test "Pay before starting the parking period", %{conn: conn} do
+
+    Repo.insert!(%Zone{id: 1, name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "A"})
+    conn = put conn, "/zones/1", %{id: 1, zone: [end_date: "13:30", hourlyPrice: "2", pay_now: "true", payment_type: "Hourly", realTimePrice: "16", start_date: "12:00", total_payment: "2"]}
+    conn = get conn, redirected_to(conn)
+    balance = "12.43"
+    user = Agileparking.Authentication.load_current_user(conn)
+    {old_balance, _ } = Float.parse(balance)
+    {new_balance, _ } = Float.parse(user.balance)
+    price = totalPriceHourly("12:00", "13:30", 2)
+
+    assert old_balance - price == new_balance
+  end
+
+  # Requirement 4.2
+  test "Pay after extending the parking period", %{conn: conn} do
+
+    Repo.insert!(%Zone{id: 1, name: "Puiestee 112", hourlyPrice: 2, realTimePrice: 16, available: true, zone: "A"})
+    conn = put conn, "/zones/1", %{id: 1, zone: [id: 1, end_date: "13:30", hourlyPrice: "2", pay_now: "false", payment_type: "Hourly", realTimePrice: "16", start_date: "12:00", total_payment: "2"]}
+    conn = get conn, redirected_to(conn)
+    conn = put conn, "/bookings/1", %{id: 1, booking: [id: 1, end_date: "14:30"]}
+    conn = get conn, redirected_to(conn)
+
+    user = Agileparking.Authentication.load_current_user(conn)
+
+    {old_balance, _ } = Float.parse(user.balance)
+
+    conn = delete conn, "/bookings/1", %{id: 1, booking: [id: 1, end_date: "14:30"]}
+    conn = get conn, redirected_to(conn)
+
+    user = Agileparking.Authentication.load_current_user(conn)
+    {new_balance, _ } = Float.parse(user.balance)
+
+    price = totalPriceHourly("12:00", "14:30", 2)
+
+    #  assert html_response(conn, 200) =~ ~r/8.43/
+    assert old_balance - price == new_balance
+  end
+
+  def product(a, b), do: a * b
+      def sum(a, b), do: a + b
+      def sub(a, b), do: a - b
+      def divi(a, b), do: a / b
+  def totalTime(start_date, end_date) do
+    {startHour, _} = Integer.parse(String.slice(start_date, 0..1))
+    {startMin, _} = Integer.parse(String.slice(start_date, 3..4))
+    startTotalMin = sum(product(startHour, 60),startMin)
+
+    {endHour, _} = Integer.parse(String.slice(end_date, 0..1))
+    {endMin, _} = Integer.parse(String.slice(end_date, 3..4))
+    endTotalMin = sum(product(endHour, 60),endMin)
+    differenceMin = sub(endTotalMin, startTotalMin)
+  end
+
+  def totalPriceHourly(start_date, end_date, hourlyPrice) do
+    time = totalTime(start_date, end_date)
+    case Integer.mod(time , 60) == 0 do
+      true -> totalPrice = product(divi(time, 60), hourlyPrice)
+      _ -> totalPrice = product(sum(divi(sub(time, Integer.mod(time , 60)), 60),1), hourlyPrice)
+    end
   end
 end
