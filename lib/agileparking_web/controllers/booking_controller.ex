@@ -95,6 +95,9 @@ defmodule AgileparkingWeb.BookingController do
                 Repo.get_by(User,id: user.id)
                   |> Ecto.Changeset.change(%{balance: Float.to_string(sub(current_balance,totalPrice))})
                   |>Repo.update()
+                  {:ok, _booking} = Repo.get_by(Booking,id: booking.id)
+                              |>Ecto.Changeset.change(%{parkingStatus: "Finished"})
+                              |>Repo.update()
               _ -> conn
               |> put_flash(:error, "There is not enough balance. Please increase balance")
               |> redirect(to: Routes.booking_path(conn, :index))
@@ -103,11 +106,12 @@ defmodule AgileparkingWeb.BookingController do
              |> put_flash(:error,"Please enter the end date for calculation")
              |> redirect(to: Routes.booking_path(conn,:edit,booking))
         end
-    end
-    {:ok, _booking} = Repo.get_by(Booking,id: booking.id)
+      else
+        {:ok, _booking} = Repo.get_by(Booking,id: booking.id)
                               |>Ecto.Changeset.change(%{parkingStatus: "Finished"})
                               |>Repo.update()
 
+    end
     conn
     |> put_flash(:info,"Booking finished succesfully")
     |> redirect(to: Routes.booking_path(conn,:index))
