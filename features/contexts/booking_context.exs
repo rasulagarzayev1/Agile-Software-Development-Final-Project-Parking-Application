@@ -14,7 +14,7 @@ defmodule BookingContext do
       Ecto.Adapters.SQL.Sandbox.checkout(Agileparking.Repo)
       Ecto.Adapters.SQL.Sandbox.mode(Agileparking.Repo, {:shared, self()})
       # Register and login new user for BDD tests
-      [%{name: "sergi", email: "sergimartinez@gmail.cat", license_number: "123456789", password: "123456", balance: "12"}]
+      [%{name: "sergi", email: "sergimartinez@gmail.cat", license_number: "123456789", password: "123456", balance: "12", monthly_bill: "0"}]
       |> Enum.map(fn user_data -> User.changeset(%User{}, user_data) end)
       |> Enum.each(fn changeset -> Repo.insert!(changeset) end)
 
@@ -61,7 +61,7 @@ defmodule BookingContext do
 
   and_ ~r/^I press submit1$/, fn state ->
     click({:id, "search"})
-    :timer.sleep(7000)
+    :timer.sleep(20000)
     {:ok, state}
   end
 
@@ -76,7 +76,7 @@ defmodule BookingContext do
 
   and_ ~r/^I click goShowDetail button and go show booking page$/, fn state ->
     click({:id, "goShowDetail"})
-    :timer.sleep(1000)
+    :timer.sleep(5000)
     {:ok, state}
   end
 
